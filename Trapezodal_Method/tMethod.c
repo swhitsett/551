@@ -92,10 +92,10 @@
 
 int a = 100;
 int b = 600;
-unsigned long n = 9000000;
-char comp[19];
-char comp2[19];
-double actualNum = 4003.72090015132682;//4003.71980545360157
+unsigned long n = 1000000;
+char comp[15];
+char comp2[15];
+double actualNum = 4003.7209001513;//4003.71980545360157
 
 double result = 0;
 double approx = 0;
@@ -111,18 +111,21 @@ void tFunction() {
    // printf("%d", *(int*)vargp);
    // unsigned long end = (n/8)*(id + 1);
    // printf("thread %d works up to %u\n", id, end);
-  int i;
-   for(i = 1; i < n; i++) {
-       double y = a + i * h;
-       approx += f(y);
-       double yarp = approx*h;
-       snprintf(comp,19,"%.14f",yarp);
-       snprintf(comp,19,"%.14f",actualNum);
-       // printf("%s",comp);
-       if(yarp == actualNum){
-        printf("YAY");
-        break;
-      }
+   int i;
+  for(i=1; i<n; i++){ 
+    int run = 0;
+    for(run = 1; run < i; run++) {
+     double y = a + run * h;
+     approx += f(y);
+     double yarp = approx*h;
+     snprintf(comp,19,"%.10f",yarp);
+     snprintf(comp,19,"%.10f",actualNum);
+     // printf("%.10f\n",approx*h);
+     if(yarp == actualNum){
+      printf("YAY");
+      break;
+    }
+  }
        // break;
        // if()    
    } 
