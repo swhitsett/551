@@ -1,54 +1,16 @@
-// #include <stdio.h>
-// #include <stdio.h>
-// // #include <pthread.h>
-// #include <cmath>
-// #include <regex.h>
-// // #include <mpi.h>
-
-// int i;
-// int a = 600;
-// int b = 100;
-// int n = 1000000;
-// double result = 0;
-
-// double f(double x){
-// 	return cos(x/3.0)-(2.0*cos(x/5.0))+(5.0*sin(x/4.0))+8.0;
-// }
-
-// void trap(){
-
-// 	double h = ((double)b - (double)a)/(double)n;
-// 	double approx = (f((double)a) + f((double)b))/2.0;
-
-// 	for(i=2000000; i <= 3000000; i++){
-// 		double x_i = (double)a + (double)i*h;
-// 		approx += f(x_i);
-  
-// 		printf("N=%d Result is =%.14f \n", i, approx*h);
-// 	}
-
-// 	// approx = h*approx;	
-// 	// printf("N=%d Result is =%.40f",n,approx);	
-// }
-
-// int main(){
-// 	// pthread_t t;
-// 	// for(int i=0; i<8; i++){
-// 	// 	pthread_create(&t, NULL, trap, (void*)x);
-// 	// }
-// 	// pthread_exit(NULL);
-//   trap();
-// 	return 0;
-// }
-//--------------------------------g++ tMethod.c -lpthread----------------------
+//----------------------------------------------------------------------
 // #include <stdio.h>
 // #include <stdlib.h>
-// #include <pthread.h>
+// // #include <pthread.h>
 // #include <cmath>
 
 // int a = 100;
 // int b = 600;
-// unsigned long n = 3000000;
+// unsigned long n = 1000000;
+// char comp[15];
+// char comp2[15];
+// char compx[7];
+// double actualNum = 4003.7209001513;//4003.71980545360157
 
 // double result = 0;
 // double approx = 0;
@@ -57,89 +19,132 @@
 //    return cos(x/3.0) - 2 * cos(x/5.0) + 5 * sin(x/4.0) + 8;
 // }
 
-// void * threadFunction(void* vargp) {
-//    double h = (double)(b-a) / (double)n;
-//    double curResult = approx;
-//    int *id = (int*)vargp;
-//    unsigned long end = (n/8)*((*id) + 1);
-//    printf("thread: %d on: %ul\n", id, end);
-//    unsigned long i;
-//    for(i = 0; i < end; i++) {
-//        double y = a + i * h;
-//        curResult += f(y);
-//        // printf("N=%d Result is =%.14f \n", i, curResult*h);    
+// void tFunction() {
+//    double h = (double)(b-a)/(double)n;
+//    int i;
+//   for(i=1; i<n; i=i*2){ 
+//     int run = 0;
+//     // printf("%i\n",i);
+//     for(run = 1; run < i; run++) {
+//      double y = a + run * h;
+//      approx += f(y);
+//      double yarp = approx*h;
+//      snprintf(comp,19,"%.2f",stopPoint);
+//      snprintf(comp,19,"%.10f",yarp);
+//      snprintf(comp2,19,"%.10f",actualNum);
+//      // printf("%.10f\n",approx*h);
+//      if(yarp == actualNum){
+//       printf("YAY");
+//       break;
+//     }
+//   }
+   
 //    } 
-//    result += curResult * h;
-//    printf("curResult: %f\n", curResult * h);
-//    printf("Result is = %.14f\n", result);
+//    result += approx * h;
+//    printf("num of Trapazoids: %i\n", i);
+//    printf("final result: %.14f\n", result);
 // }
 
 // int main() {
 //    pthread_t thread;
 //    int x;
 //    approx = (f(a) + f(b)) / 2.0;
-//    for(x = 0; x < 8; x++) {
-//        pthread_create(&thread, NULL, threadFunction, &x);
-//    }
-//    pthread_exit(NULL);
-//    printf("RESULT: %f\n", result);
+//    tFunction();
+
+//    // printf("RESULT: %f\n", result);
 // }
-//----------------------------------------------------------------------
+//--------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
-// #include <pthread.h>
 #include <cmath>
 
 int a = 100;
 int b = 600;
-unsigned long n = 1000000;
-char comp[15];
-char comp2[15];
-double actualNum = 4003.7209001513;//4003.71980545360157
+int numOfTraps = 0;
+unsigned long n = 3000000;
+double actualNum = 4003.7209001513;
+double result;
+double approx;
+double h;//= (double)(b-a)/(double)n;
+char withinRange[7];
+char guessedNumber[15];
+char desiredNumber[15];
+bool breakOut = false;
 
-double result = 0;
-double approx = 0;
 
 double f(double x) {
-   return cos(x/3.0) - 2 * cos(x/5.0) + 5 * sin(x/4.0) + 8;
+  return cos(x/3.0) - 2 * cos(x/5.0) + 5 * sin(x/4.0) + 8;
 }
 
-void tFunction() {
-   double h = (double)(b-a) / (double)n;
-   // double localResult = approx;
-   // int id = *(int *)vargp;
-   // printf("%d", *(int*)vargp);
-   // unsigned long end = (n/8)*(id + 1);
-   // printf("thread %d works up to %u\n", id, end);
-   int i;
-  for(i=1; i<n; i++){ 
-    int run = 0;
-    for(run = 1; run < i; run++) {
-     double y = a + run * h;
-     approx += f(y);
-     double yarp = approx*h;
-     snprintf(comp,19,"%.10f",yarp);
-     snprintf(comp,19,"%.10f",actualNum);
-     // printf("%.10f\n",approx*h);
-     if(yarp == actualNum){
-      printf("YAY");
+void oneByone(int unox2){
+
+  for(int uno=unox2; uno<n; uno++){
+    for(int i=1; i<uno; i++){
+      result = 0;
+      double y = a + i*h;
+      approx += f(y);
+      result += approx*h;
+      // snprintf(guessedNumber,19,"%.10f",result);
+      // snprintf(desiredNumber,19,"%.10f",actualNum);
+      snprintf(withinRange,19,"%.0f",result);
+      printf("%f\n",result);
+      printf("%i\n",uno);
       break;
+      breakOut = true;
+
+      if(result == actualNum){
+        printf("yay");
+        breakOut = true;
+        break;
+      }
+
+      if(guessedNumber == desiredNumber){
+        breakOut = true;
+        break;
+      }
+
     }
+    break;
   }
-       // break;
-       // if()    
-   } 
-   result += approx * h;
-   printf("num of Trapazoids: %i\n", i);
-   printf("final result: %.14f\n", result);
+}
+void tFunction(){
+
+  // double result;
+  // double approx = (f(a) + f(b)) / 2.0;
+  // double h = (double)(b-a)/(double)n;
+
+  for(numOfTraps=1; numOfTraps<n; numOfTraps=numOfTraps*2){
+    for(int i=1; i<numOfTraps; i++){
+      result = 0;
+      double y = a + i*h;
+      approx += f(y);
+      result += approx*h;
+      // snprintf(guessedNumber,19,"%.10f",result);
+      // snprintf(desiredNumber,19,"%.10f",actualNum);
+      snprintf(withinRange,19,"%.0f",result);
+      // printf("%s\n",withinRange);
+
+      if(result >= 4003.72){
+        printf("yay1\n");
+        oneByone(numOfTraps);
+        breakOut = true;
+        break;
+      }
+
+      if(guessedNumber == desiredNumber){
+        breakOut = true;
+        break;
+      }
+
+    }
+    if(breakOut == true)
+      break;
+  }
+
 }
 
-int main() {
-   pthread_t thread;
-   int x;
-   approx = (f(a) + f(b)) / 2.0;
-   tFunction();
-
-   // printf("RESULT: %f\n", result);
+int main(){
+  approx = (f(a) + f(b)) / 2.0;
+  tFunction();
 }
-//--------------------------------------------------------------------
