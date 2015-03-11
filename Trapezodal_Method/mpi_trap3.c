@@ -5,7 +5,7 @@
  *
  * Input:    The endpoints of the interval of integration and the number
  *           of trapezoids
- * Output:   Estimate of the integral from a to b of f(x)
+ * Output:   tResult of the integral from a to b of f(x)
  *           using the trapezoidal rule and n trapezoids.
  *
  * Compile:  mpicc -g -Wall -o mpi_trap2 mpi_trap2.c
@@ -14,7 +14,7 @@
  * Algorithm:
  *    1.  Each process calculates "its" interval of
  *        integration.
- *    2.  Each process estimates the integral of f(x)
+ *    2.  Each process tResults the integral of f(x)
  *        over its interval using the trapezoidal rule.
  *    3a. Each process != 0 sends its integral to 0.
  *    3b. Process 0 sums the calculations received from
@@ -25,24 +25,21 @@
  * IPP:   Section 3.4.2 (pp. 104 and ff.)
  */
 #include <stdio.h>
-
-/* We'll be using MPI routines, definitions, etc. */
 #include <mpi.h>
+#include <math.h>
 
 /* Get the input values */
-void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
-      int* n_p);
-
-/* Calculate local integral  */
-double Trap(double left_endpt, double right_endpt, int trap_count, 
-   double base_len);    
-
-/* Function we're integrating */
-double f(double x); 
+void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p, int* n_p);
+double Trap(double a, double b, int n, double h);    
+double f(double x);
+int error(double possible); 
 
 int main(void) {
-   int my_rank, comm_sz, n, local_n;   
-   double a, b, h, local_a, local_b;
+   int my_rank, comm_sz, local_n;
+   int n;   
+   double a;
+   double b; 
+   double h, local_a, local_b;
    double local_int, total_int;
 
    /* Let the system do what it needs to start up MPI */
@@ -55,8 +52,11 @@ int main(void) {
    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 
    Get_input(my_rank, comm_sz, &a, &b, &n);
-
+//***************************************************************************
    h = (b-a)/n;          /* h is the same for all processes */
+   MPI_Barrier(comm);
+   local_start = MPIWtime();
+
    local_n = n/comm_sz;  /* So is the number of trapezoids  */
 
    /* Length of each process' interval of
@@ -67,16 +67,31 @@ int main(void) {
    local_int = Trap(local_a, local_b, local_n, h);
 
    /* Add up the integrals calculated by each process */
-   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0,
-         MPI_COMM_WORLD);
+   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+   
+   for(p=1; p<n;p++){
+      if(p >= 2)
+         p = p * 2;
+
+      h = (b-a)/p;
+      tResult = Trap(a, b, p, h);
+      if(error(tResult) == 1){
+         break;
+      }
+   }
 
    /* Print the result */
    if (my_rank == 0) {
-      printf("With n = %d trapezoids, our estimate\n", n);
+      printf("With n = %d trapezoids, our tResult\n", n);
       printf("of the integral from %f to %f = %.15e\n",
           a, b, total_int);
    }
-
+   local_finish = MPI_Wtime();
+   local_elapsed = local_finish - local_start;
+   MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+   if(my_rank == 0)
+      printf("Elapsed time = %e seconds\n", elapsed);
+//**************************************************************************
    /* Shut down MPI */
    MPI_Finalize();
 
@@ -109,32 +124,26 @@ void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
  * Function:     Trap
  * Purpose:      Serial function for estimating a definite integral 
  *               using the trapezoidal rule
- * Input args:   left_endpt
- *               right_endpt
- *               trap_count 
- *               base_len
- * Return val:   Trapezoidal rule estimate of integral from
- *               left_endpt to right_endpt using trap_count
+ * Input args:   a
+ *               b
+ *               n 
+ *               h
+ * Return val:   Trapezoidal rule tResult of integral from
+ *               a to b using n
  *               trapezoids
  */
-double Trap(
-      double left_endpt  /* in */, 
-      double right_endpt /* in */, 
-      int    trap_count  /* in */, 
-      double base_len    /* in */) {
-   double estimate, x; 
+double Trap(double a, double b, int n, double h) {
+   double tResult, x; 
    int i;
 
-   estimate = (f(left_endpt) + f(right_endpt))/2.0;
-   for (i = 1; i <= trap_count-1; i++) {
-      x = left_endpt + i*base_len;
-      estimate += f(x);
+   tResult = (f(a) + f(b))/2.0;
+   for (i = 1; i <= n-1; i++) {
+      tResult += f(a+i*h);
    }
-   estimate = estimate*base_len;
+   tResult = tResult*h;
 
-   return estimate;
-} /*  Trap  */
-
+   return tResult;
+}
 
 /*------------------------------------------------------------------
  * Function:    f
@@ -142,5 +151,27 @@ double Trap(
  * Input args:  x
  */
 double f(double x) {
-   return x*x;
-} /* f */
+   return cos(x/3.0) - 2 * cos(x/5.0) + 5 * sin(x/4.0) + 8;
+}
+
+//---------------------------------------------------------------
+int error(double possible){
+
+   double trueVal = 4003.7209001513;
+   double error = 5 * pow(10,(-15));
+
+   double trueErr = trueVal - possible;
+ realtive_error = trueErr / trueVal;
+   realtive_error = fabs(realtive_error);
+
+   if(realtive_error <= error)
+   {
+      // printf("%f\n", realtive_error);
+      return 1;
+   }
+   else
+   {
+      // printf("yayaya");
+      return 0;
+   }
+}
