@@ -33,15 +33,16 @@ void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p, int* n_p);
 double Trap(double a, double b, int n, double h);    
 double f(double x);
 int error(double possible); 
-
+double realtive_error;
+double tResult;
 int main(void) {
    int my_rank, comm_sz, local_n;
    int n;   
    double a;
-   double b; 
+   double b;
    double h, local_a, local_b;
    double local_int, total_int;
-
+   int p;
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
 
@@ -54,8 +55,8 @@ int main(void) {
    Get_input(my_rank, comm_sz, &a, &b, &n);
 //***************************************************************************
    h = (b-a)/n;          /* h is the same for all processes */
-   MPI_Barrier(comm);
-   local_start = MPIWtime();
+   // MPI_Barrier(comm);
+   // local_start = MPIWtime();
 
    local_n = n/comm_sz;  /* So is the number of trapezoids  */
 
@@ -83,14 +84,14 @@ int main(void) {
    /* Print the result */
    if (my_rank == 0) {
       printf("With n = %d trapezoids, our tResult\n", n);
-      printf("of the integral from %f to %f = %.15e\n",
+      printf("of the integral from %f to %f = %.15f\n",
           a, b, total_int);
    }
-   local_finish = MPI_Wtime();
-   local_elapsed = local_finish - local_start;
-   MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
-   if(my_rank == 0)
-      printf("Elapsed time = %e seconds\n", elapsed);
+   // local_finish = MPI_Wtime();
+   // local_elapsed = local_finish - local_start;
+   // MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+   // if(my_rank == 0)
+   //   printf("Elapsed time = %e seconds\n", elapsed);
 //**************************************************************************
    /* Shut down MPI */
    MPI_Finalize();
@@ -133,7 +134,7 @@ void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
  *               trapezoids
  */
 double Trap(double a, double b, int n, double h) {
-   double tResult, x; 
+   // double tResult, x; 
    int i;
 
    tResult = (f(a) + f(b))/2.0;
