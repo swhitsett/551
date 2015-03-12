@@ -42,6 +42,7 @@ int main(void) {
    double b;
    double h, local_a, local_b;
    double local_int, total_int;
+   double local_start, local_finish, local_elapsed, elapsed;
    int p;
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
@@ -54,9 +55,10 @@ int main(void) {
 
    Get_input(my_rank, comm_sz, &a, &b, &n);
 //***************************************************************************
+   MPI_Barrier(MPI_COMM_WORLD);
+   local_start = MPI_Wtime();
+
    h = (b-a)/n;          /* h is the same for all processes */
-   // MPI_Barrier(comm);
-   // local_start = MPIWtime();
 
    local_n = n/comm_sz;  /* So is the number of trapezoids  */
 
@@ -68,7 +70,6 @@ int main(void) {
    local_int = Trap(local_a, local_b, local_n, h);
 
    /* Add up the integrals calculated by each process */
-   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
    
    for(p=1; p<n;p++){
       if(p >= 2)
@@ -80,12 +81,21 @@ int main(void) {
          break;
       }
    }
-
+   
+   local_finish = MPI_Wtime();
+   local_elapsed = local_finish - local_start;
+   
+   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+   MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
    /* Print the result */
    if (my_rank == 0) {
+      printf("Processors = %i\n", comm_sz);
+      printf("Elapsed time = %e seconds\n", elapsed);
       printf("With n = %d trapezoids, our tResult\n", n);
-      printf("of the integral from %f to %f = %.15f\n",
-          a, b, total_int);
+      printf("of the integral from %f to %f = %.15f\n", a, b, total_int);
+      printf("absolute relative true error = %e is NOT less than criteria = %e\n"
+             , realtive_error, 5 * pow(10,(-15)));
+             
    }
    // local_finish = MPI_Wtime();
    // local_elapsed = local_finish - local_start;
@@ -165,7 +175,7 @@ int error(double possible){
  realtive_error = trueErr / trueVal;
    realtive_error = fabs(realtive_error);
 
-   if(realtive_error <= error)
+   if(realtive_error >= error)
    {
       // printf("%f\n", realtive_error);
       return 1;
