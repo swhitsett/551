@@ -71,9 +71,9 @@ int main(void) {
 
    /* Add up the integrals calculated by each process */
    
-   for(p=1; p<n;p++){
-      if(p >= 2)
-         p = p * 2;
+   for(p=1; p<n;p=p*2){
+      if(p >= 1000000)
+         p = (p / 2) + 100000;
 
       h = (b-a)/p;
       tResult = Trap(a, b, p, h);
