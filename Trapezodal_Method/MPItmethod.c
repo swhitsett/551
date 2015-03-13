@@ -33,10 +33,11 @@ int main(void) {
    double local_int, total_int;
    double local_start, local_finish, local_elapsed, elapsed;
 
-   Get_input(my_rank, comm_sz, &a, &b, &n);
    MPI_Init(NULL, NULL);
    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+
+   Get_input(my_rank, comm_sz, &a, &b, &n);
    MPI_Barrier(MPI_COMM_WORLD);
    local_start = MPI_Wtime();
 //*****************************To be Timed*********************************
@@ -67,8 +68,8 @@ int main(void) {
 
    if (my_rank == 0){
       printf("Running on %i processors.\n", comm_sz);
-      printf("Elapsed time = %f seconds\n", elapsed);
-      printf("With n = %d trapezoids,\n", n);
+      printf("Elapsed time = %e seconds\n", elapsed);
+      printf("With n = %d trapezoids,\n", p);
       printf("our estimate of the integral from %f to %f = %.15f\n", a, b, total_int);
       printf("absolute relative true error = %e is NOT less than criteria = %e\n"
              , relative_error, 5 * pow(10,(-15))); 
@@ -80,13 +81,15 @@ int main(void) {
 
 /*------------------------------------------------------------------
  * Function:     Get_input
+   - This function will grab input for a, b, n to set the bounds for the
+     experiment
  */
 void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
       int* n_p) {
 
    if (my_rank == 0) {
       printf("Enter a, b, and n\n");
-      scanf("%lf %lf %d\n", a_p, b_p, n_p);
+      scanf("%lf %lf %d", a_p, b_p, n_p);
    } 
    MPI_Bcast(a_p, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
    MPI_Bcast(b_p, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -95,6 +98,9 @@ void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
 
 /*------------------------------------------------------------------
  * Function:     Trap
+   - This is the intergration function where bounds are set by user input
+   - includes calls to the "f" function
+   - returns the total local result
  */
 double Trap(double a, double b, int n, double h) {
    // double tResult, x; 
@@ -112,12 +118,18 @@ double Trap(double a, double b, int n, double h) {
 
 /*------------------------------------------------------------------
  * Function:    f
+   - This is the actual equation used to compute the number of Trapezoids
  */
 double f(double x) {
    return cos(x/3.0) - 2 * cos(x/5.0) + 5 * sin(x/4.0) + 8;
 }
 
-//---------------------------------------------------------------
+/*---------------------------------------------------------------
+   Function:    relError
+   - This function computes the absolute relative approximate error that 
+     is checked after every series of runs to see if the error is below 
+     the desired amount.
+*/
 int relError(double possible){
 
    double trueVal = 4003.7209001513;
