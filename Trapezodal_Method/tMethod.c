@@ -8,45 +8,33 @@ double Trap(double a, double b, unsigned long int n, double h);
 double realtive_error;
 
 int main(void) {
-  double tResult;   
-  double a = 100;
-  double b = 600;       
-  unsigned long int n = 3000000; 
-  double  h;          
-  int p;
+double tResult;   
+double a = 100;
+double b = 600;       
+unsigned long int n = 3000000; 
+double  h;          
+int p;
 
-   // printf("Enter a, b, and n\n");
-   // scanf("%lf", &a);
-   // scanf("%lf", &b);
-   // scanf("%lu", &n);
-   // int asdf = error(tResult);
+h = (b-a)/n;
+tResult = Trap(a, b, n, h);
 
+for(p=1; p<n;p++){
+ if(p >= 2)
+    p = p * 2;
 
-   h = (b-a)/n;
-   tResult = Trap(a, b, n, h);
+ h = (b-a)/p;
+ tResult = Trap(a, b, p, h);
+ if(error(tResult) == 1){
+    break;
+ }
+}
 
-   // while(asdf == 0){
-      // n = n*2;
-   //4003.720901
-      for(p=1; p<n;p++){
-         if(p >= 2)
-            p = p * 2;
+printf("With n = %i trapezoids, our estimate\n", p);
+printf("of the tResult from %f to %f = %.15f\n",
+  a, b, tResult);
+printf("%.15g\n", realtive_error );
 
-         h = (b-a)/p;
-         tResult = Trap(a, b, p, h);
-         if(error(tResult) == 1){
-            break;
-         }
-         // printf("%f and the n =%i\n", tResult,p);
-      }
-   // }
-   
-   printf("With n = %i trapezoids, our estimate\n", p);
-   printf("of the tResult from %f to %f = %.15f\n",
-      a, b, tResult);
-   printf("%.15g\n", realtive_error );
-
-   return 0;
+return 0;
 }
 
 //------------------------------------------------------------------

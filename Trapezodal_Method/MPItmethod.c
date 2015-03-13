@@ -121,12 +121,12 @@ double f(double x) {
 int relError(double possible){
 
    double trueVal = 4003.7209001513;
-   double relError = 5 * pow(10,(-15));
+   double error = 5 * pow(10,(-15));
 
    relative_error = (trueVal - possible)/ trueVal;
    relative_error = fabs(relative_error);
 
-   if(relative_error <= relError)
+   if(relative_error <= error)
       return 1;
    else
       return 0;
