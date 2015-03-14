@@ -38,18 +38,18 @@ int main(void) {
    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 
    Get_input(my_rank, comm_sz, &a, &b, &n);
-   MPI_Barrier(MPI_COMM_WORLD);
+  // MPI_Barrier(MPI_COMM_WORLD);
    local_start = MPI_Wtime();
 //*****************************To be Timed*********************************
+   p = n;
    h = (b-a)/n;
 
    local_n = n/comm_sz;
    local_a = a + my_rank*local_n*h;
    local_b = local_a + local_n*h;
    local_int = Trap(local_a, local_b, local_n, h);
-
+    
    for(p=1; p<n;p=p*2){
-
       if(p >= 1000000)
          p = (p / 2) + 100000;
 
@@ -59,16 +59,17 @@ int main(void) {
          break;
       }
    }
+//   MPI_Barrier(MPI_COMM_WORLD);
 //**************************************************************************   
-   local_finish = MPI_Wtime();
-   local_elapsed = local_finish - local_start;
    
-   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-   MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+  MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+  local_finish = MPI_Wtime();
+           local_elapsed = local_finish - local_start;
+ //  MPI_Reduce(&local_elapsed, &local_elapsed, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
    if (my_rank == 0){
       printf("Running on %i processors.\n", comm_sz);
-      printf("Elapsed time = %e seconds\n", elapsed);
+      printf("Elapsed time = %f seconds\n", local_elapsed);
       printf("With n = %d trapezoids,\n", p);
       printf("our estimate of the integral from %f to %f = %.15f\n", a, b, total_int);
       printf("absolute relative true error = %e is NOT less than criteria = %e\n"
