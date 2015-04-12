@@ -58,9 +58,10 @@ int main(){
 				tempVector[i] = 0;
 				for(k=0; k<n; k++){
 
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
+					reslutMatrix[i*n+j] += matrix1[i*n+k] * matrix2[k*n+j];
 				}
-				reslutMatrix[i*n+j] = tempVector[i];
+				// printf("%i\n", tempVector[i] );
+				// reslutMatrix[i*n+j] = tempVector[i];
 			}
 		}
 	}
@@ -71,22 +72,20 @@ int main(){
 				tempVector[i] = 0;
 				for(j=0; j<n; j++){
 
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
+					reslutMatrix[i*n+j] += matrix1[i*n+k] * matrix2[k*n+j];
 				}
-				reslutMatrix[i*n+j] = tempVector[i];
 			}
 		}
 	}
 	else if(strcmp("kji",form) == 0){
 		int i,j,k;
-		for(j=0; j<n; j++){
-			for(k=0; k<n; k++){
+		for(k=0; k<n; k++){
+			for(j=0; j<n; j++){
 				tempVector[i] = 0;
 				for(i=0; i<n; i++){
 
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
+					reslutMatrix[i*n+j] += matrix1[i*n+k] * matrix2[k*n+j];
 				}
-				reslutMatrix[i*n+j] = tempVector[i];
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 #include <string.h>
 
 void reciveMatrix(int n,int matrix[]);
-void multiMatrixIJK(int n, int vectorA[], int matrixB[]);
+void multiMatrixIJK(int n, int vectorA[n], int matrixB[], int tempVector[]);
 void printMatrix(int n, int matrix[]);
 
 void reciveMatrix(int n, int matrix[] ){
@@ -16,11 +16,30 @@ void reciveMatrix(int n, int matrix[] ){
 	}
 }
 
-void multiMatrixIJK(int n, int vectorA[], int matrixB[]){
+void multiMatrixIJK(int n, int vectorA[1], int matrixB[], int tempVector[]){
 	
+	int j,k;
+	// int *localVec = NULL;
+	// localVec = malloc(n*sizeof(int));
+
+	for(j=0; j<n; j++){
+		tempVector[j] = 0;
+		for(k=0; k<n; k++){
+
+			tempVector[j] += vectorA[k] * matrixB[k*n+j];
+		}
+		// tempVector[i];
+	}
+
+	int i;
+	for(i=0; i<n; i++)
+		printf("%d\n",tempVector[i] );
+	// return tempVector;
+	printf("\n" );
 }
+
 void printMatrix(int n, int matrix[]){
-	//for printing pourpses --------------
+
 	int i;
 	int j;
 	for (i = 0; i < n; i++) {
@@ -52,10 +71,10 @@ int main(){
 	reciveMatrix(n, matrix2);
 
 	if(strcmp("ijk",form) == 0){
-		int i,j,k;
+		int i;
 		for(i=0; i<n; i++){
-			
-			empVector[i] = multiMatrixIJK(n, matrix1[i], matrix2);
+			multiMatrixIJK(n, matrix1, matrix2, tempVector);
+			// reslutMatrix[i] = multiMatrixIJK(n, matrix1[i], matrix2, tempVector);
 			
 		}
 	}
@@ -72,6 +91,7 @@ int main(){
 
 	free(matrix1);
 	free(matrix2);
+	free(tempVector);
 	free(reslutMatrix);
 	return 0;
 }
