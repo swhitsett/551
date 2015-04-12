@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 void reciveMatrix(int n,int matrix[]);
 void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]);
@@ -18,6 +19,25 @@ void reciveMatrix(int n, int matrix[] ){
 
 void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]){
 	
+}
+void createMatrix(int n, int matrixA[], int matrixB[]){
+	int row;
+	int colum;
+	int temp;
+	for(row=0; row<n; row++){
+		for(colum=0; colum<n; colum++){
+			temp = (rand()%10);
+			matrixB[row*n+colum] = temp;
+			printf("%i\n", matrixB[row*n+colum]);
+		}
+	}
+
+	for(row=0; row<n; row++){
+		for(colum=0; colum<n; colum++){
+			temp = (rand()%10);
+			matrixB[row*n+colum] = (int)1;
+		}
+	}
 }
 void printMatrix(int n, int matrix[]){
 	//for printing pourpses --------------
@@ -48,8 +68,33 @@ int main(){
 	reslutMatrix = malloc(n*n*sizeof(int));
 	tempVector = malloc(n*sizeof(int));
 
-	reciveMatrix(n, matrix1);
-	reciveMatrix(n, matrix2);
+	if(flag == 'R'){
+		// createMatrix(n, matrix1, matrix2);
+		int row;
+		int colum;
+		int temp =0;
+		srand(time(NULL));
+		for(row=0; row<n; row++){
+			for(colum=0; colum<n; colum++){
+				
+				temp = (rand()%10);
+				matrix1[row*n+colum] = temp;
+				// printf("%i\n", matrix1[row*n+colum]);
+			}
+		}
+		
+		for(row=0; row<n; row++){
+			for(colum=0; colum<n; colum++){
+				temp = (rand()%10);
+				matrix2[row*n+colum] = temp;
+				// printf("%i\n", matrix2[row*n+colum]);
+			}
+		}
+	}
+	else if(flag == 'I'){
+		reciveMatrix(n, matrix1);
+		reciveMatrix(n, matrix2);
+	}
 
 	if(strcmp("ijk",form) == 0){
 		int i,j,k;
