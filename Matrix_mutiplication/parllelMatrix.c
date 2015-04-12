@@ -3,7 +3,7 @@
 #include <string.h>
 
 void reciveMatrix(int n,int matrix[]);
-void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]);
+void multiMatrixIJK(int n, int vectorA[], int matrixB[]);
 void printMatrix(int n, int matrix[]);
 
 void reciveMatrix(int n, int matrix[] ){
@@ -16,7 +16,7 @@ void reciveMatrix(int n, int matrix[] ){
 	}
 }
 
-void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]){
+void multiMatrixIJK(int n, int vectorA[], int matrixB[]){
 	
 }
 void printMatrix(int n, int matrix[]){
@@ -54,41 +54,16 @@ int main(){
 	if(strcmp("ijk",form) == 0){
 		int i,j,k;
 		for(i=0; i<n; i++){
-			for(j=0; j<n; j++){
-				tempVector[i] = 0;
-				for(k=0; k<n; k++){
-
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
-				}
-				reslutMatrix[i*n+j] = tempVector[i];
-			}
+			
+			empVector[i] = multiMatrixIJK(n, matrix1[i], matrix2);
+			
 		}
 	}
 	else if(strcmp("ikj",form) == 0){
 		int i,j,k;
-		for(i=0; i<n; i++){
-			for(k=0; k<n; k++){
-				tempVector[i] = 0;
-				for(j=0; j<n; j++){
-
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
-				}
-				reslutMatrix[i*n+j] = tempVector[i];
-			}
-		}
 	}
 	else if(strcmp("kji",form) == 0){
 		int i,j,k;
-		for(j=0; j<n; j++){
-			for(k=0; k<n; k++){
-				tempVector[i] = 0;
-				for(i=0; i<n; i++){
-
-					tempVector[i] += matrix1[i*n+k] * matrix2[k*n+j];
-				}
-				reslutMatrix[i*n+j] = tempVector[i];
-			}
-		}
 	}
 	else
 		printf("Please specifiy a correct Form");
