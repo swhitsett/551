@@ -72,22 +72,20 @@ int main(){
 		// createMatrix(n, matrix1, matrix2);
 		int row;
 		int colum;
+		int counter;
 		int temp =0;
 		srand(time(NULL));
-		for(row=0; row<n; row++){
-			for(colum=0; colum<n; colum++){
-				
-				temp = (rand()%10);
-				matrix1[row*n+colum] = temp;
-				// printf("%i\n", matrix1[row*n+colum]);
-			}
-		}
-		
-		for(row=0; row<n; row++){
-			for(colum=0; colum<n; colum++){
-				temp = (rand()%10);
-				matrix2[row*n+colum] = temp;
-				// printf("%i\n", matrix2[row*n+colum]);
+
+		for(counter=0; counter<2; counter++){
+			for(row=0; row<n; row++){
+				for(colum=0; colum<n; colum++){
+					
+					temp = (rand()%10);
+					if(counter == 0)
+						matrix1[row*n+colum] = temp;
+					else
+						matrix2[row*n+colum] = temp;
+				}
 			}
 		}
 	}
