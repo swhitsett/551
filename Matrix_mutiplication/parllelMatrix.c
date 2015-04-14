@@ -57,8 +57,8 @@ void printMatrix(int n, int matrix[]){
 /*-------------------------------------------------------------------*/
 int main(){
 
-	char local_flag;
-	char local_form[3];
+	char *local_flag;
+	char *local_form[3];
 	int *local_matrix1 = NULL;
 	int *local_matrix2 = NULL;
 	int *local_reslutMatrix = NULL;
@@ -75,14 +75,14 @@ int main(){
 	MPI_Comm_rank(comm, &my_rank);
 
 	// allocate arrays and populate matrix
-	scanf("%s %c %d",local_form, local_flag, n);
+	scanf(" %3s %c %d",local_form, local_flag, n);
 
-	matrix1 = malloc(n*n*sizeof(int));
-	matrix2 = malloc(n*n*sizeof(int));
-	reslutMatrix = malloc(n*n*sizeof(int));
-	tempVector = malloc(n*sizeof(int));
+    local_matrix1 = malloc(n*n*sizeof(int));
+	local_matrix2 = malloc(n*n*sizeof(int));
+	local_reslutMatrix = malloc(n*n*sizeof(int));
+	local_tempVector = malloc(n*sizeof(int));
 
-	if(flag == 'R'){
+	if(local_flag == 'R'){
 		// createMatrix(n, matrix1, matrix2);
 		int row;
 		int colum;
@@ -96,16 +96,16 @@ int main(){
 					
 					temp = (rand()%10);
 					if(counter == 0)
-						matrix1[row*n+colum] = temp;
+						local_matrix1[row*n+colum] = temp;
 					else
-						matrix2[row*n+colum] = temp;
+						local_matrix2[row*n+colum] = temp;
 				}
 			}
 		}
 	}
-	else if(flag == 'I'){
-		reciveMatrix(n, matrix1);
-		reciveMatrix(n, matrix2);
+	else if(local_flag == 'I'){
+		reciveMatrix(n, local_matrix1);
+		reciveMatrix(n, local_matrix2);
 	}
 
 	MPI_Barrier(comm);
