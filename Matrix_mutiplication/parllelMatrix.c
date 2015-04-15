@@ -57,8 +57,8 @@ void printMatrix(int n, int matrix[]){
 /*-------------------------------------------------------------------*/
 int main(){
 
-	char *local_flag;
-	char *local_form[3];
+	char flag;
+	char form[3];
 	int *local_matrix1 = NULL;
 	int *local_matrix2 = NULL;
 	int *local_reslutMatrix = NULL;
@@ -75,14 +75,14 @@ int main(){
 	MPI_Comm_rank(comm, &my_rank);
 
 	// allocate arrays and populate matrix
-	scanf(" %3s %c %d",local_form, local_flag, n);
+	scanf(" %3s %c %d",&form, flag, &n);
 
     local_matrix1 = malloc(n*n*sizeof(int));
 	local_matrix2 = malloc(n*n*sizeof(int));
 	local_reslutMatrix = malloc(n*n*sizeof(int));
 	local_tempVector = malloc(n*sizeof(int));
 
-	if(local_flag == 'R'){
+	if(flag == 'R'){
 		// createMatrix(n, matrix1, matrix2);
 		int row;
 		int colum;
@@ -103,7 +103,7 @@ int main(){
 			}
 		}
 	}
-	else if(local_flag == 'I'){
+	else if(flag == 'I'){
 		reciveMatrix(n, local_matrix1);
 		reciveMatrix(n, local_matrix2);
 	}

@@ -2,3 +2,4 @@ To compile
     mpicc -g -Wall -std=c99 -o mpi_hello mpi_hello.c
 To Run  
     mpirun -np 5 ./mpi_hello
+    mpirun -hostfile mh/2 realRun 
