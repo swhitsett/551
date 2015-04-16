@@ -5,7 +5,7 @@
 #include <mpi.h>
 
 void reciveMatrix(int n,int matrix[]);
-void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]);
+void multiMatrixIJK(int n, int matrixA[], int matrixB[], int resultC[]);
 void printMatrix(int n, int matrix[]);
 /*-------------------------------------------------------------------*/
 void reciveMatrix(int n, int matrix[] ){
@@ -18,7 +18,7 @@ void reciveMatrix(int n, int matrix[] ){
     }
 }
 /*-------------------------------------------------------------------*/
-void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]){
+void multiMatrixIJK(int n, int matrixA[], int matrixB[], int resultC[]){
 
 }
 /*-------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ int main(){
     char form[3];
     int *matrix1 = NULL;
     int *matrix2 = NULL;
-    int *reslutMatrix = NULL;
+    int *resultMatrix = NULL;
     int *tempVector = NULL;
     int local_n, n;
     int my_rank, comm_sz;
@@ -82,7 +82,7 @@ int main(){
 
         matrix1 = malloc(n*n*sizeof(int));
         matrix2 = malloc(n*n*sizeof(int));
-        reslutMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
+        resultMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
         tempVector = malloc(n*sizeof(int));
     
 
@@ -117,13 +117,13 @@ int main(){
    
     // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
      MPI_Bcast(matrix1, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
-     MPI_Scatter(matrix2, (n*n)/comm_sz, MPI_INT, reslutMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
+     MPI_Scatter(matrix2, (n*n)/comm_sz, MPI_INT, resultMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
     
       printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
-     // printMatrix(n, reslutMatrix);
+     // printMatrix(n, resultMatrix);
      for(int i=0; i<(n)/comm_sz; i++){
          for(int j=0; j<n; j++){
-            printf("%d,", reslutMatrix[i*n+j]);
+            printf("%d,", resultMatrix[i*n+j]);
          }
          printf("\n");
      }
@@ -140,7 +140,7 @@ int main(){
 
     free(matrix1);
     free(matrix2);
-    free(reslutMatrix);
+    free(resultMatrix);
     free(tempVector);
     MPI_Finalize();
     return 0;
