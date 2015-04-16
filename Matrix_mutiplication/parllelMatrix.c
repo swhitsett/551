@@ -59,10 +59,10 @@ int main(){
 
     char flag;
     char form[3];
-    int *local_matrix1 = NULL;
-    int *local_matrix2 = NULL;
-    int *local_reslutMatrix = NULL;
-    int *local_tempVector = NULL;
+    int *matrix1 = NULL;
+    int *matrix2 = NULL;
+    int *reslutMatrix = NULL;
+    int *tempVector = NULL;
     int local_n, n;
     int my_rank, comm_sz;
     double start, finish, loc_elapsed, elapsed;
@@ -75,17 +75,15 @@ int main(){
     MPI_Comm_rank(comm, &my_rank);
 
     // allocate arrays and populate matrix
-    if(my_rank == 0){
         scanf("%s %c %d",form, &flag, &n);
-      //  MPI_Bcast(form, 3, MPI_INT, 0, comm);
-      //  MPI_Bcast(flag, 1, MPI_INT, 0, comm); 
-      //  MPI_Bcast(n, 1, MPI_INT, 0, comm);
+        MPI_Bcast(&form, 3, MPI_INT, 0, comm);
+        MPI_Bcast(&flag, 1, MPI_INT, 0, comm); 
+        MPI_Bcast(&n, 1, MPI_INT, 0, comm);
 
-    }
-        local_matrix1 = malloc(n*n*sizeof(int));
-        local_matrix2 = malloc(n*n*sizeof(int));
-        local_reslutMatrix = malloc(n*n*sizeof(int));
-        local_tempVector = malloc(n*sizeof(int));
+        matrix1 = malloc(n*n*sizeof(int));
+        matrix2 = malloc(n*n*sizeof(int));
+        reslutMatrix = malloc(n*n*sizeof(int));
+        tempVector = malloc(n*sizeof(int));
     
 
     if(flag == 'R'){
@@ -102,23 +100,31 @@ int main(){
 
                     temp = (rand()%10);
                     if(counter == 0)
-                        local_matrix1[row*n+colum] = temp;
+                        matrix1[row*n+colum] = temp;
                     else
-                        local_matrix2[row*n+colum] = temp;
+                        matrix2[row*n+colum] = temp;
                 }
             }
         }
     }
     else if(flag == 'I'){
-        reciveMatrix(n, local_matrix1);
-        reciveMatrix(n, local_matrix2);
+        reciveMatrix(n, matrix1);
+        reciveMatrix(n, matrix2);
     }
 
     MPI_Barrier(comm);
     start = MPI_Wtime();
-
+   
     // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
+     MPI_Bcast(matrix1, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
+     // MPI_Scatter(matrix2, (n*n)/2, MPI_INT, reslutMatrix, (n*n)/2, MPI_INT, 0, MPI_COMM_WORLD);
+    
+      printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
+      printMatrix(n, matrix1);
+    
+                
 
+   // printMatrix(n, matrix2);   
     finish = MPI_Wtime();
     loc_elapsed = finish - start;
     MPI_Reduce(&loc_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
@@ -126,10 +132,10 @@ int main(){
     if (my_rank == 0)
         printf("Elapsed time = %f\n", elapsed);
 
-    free(local_matrix1);
-    free(local_matrix2);
-    free(local_reslutMatrix);
-    free(local_tempVector);
+    free(matrix1);
+    free(matrix2);
+    free(reslutMatrix);
+    free(tempVector);
     MPI_Finalize();
     return 0;
 
