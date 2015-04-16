@@ -82,7 +82,7 @@ int main(){
 
         matrix1 = malloc(n*n*sizeof(int));
         matrix2 = malloc(n*n*sizeof(int));
-        reslutMatrix = malloc(n*n*sizeof(int));
+        reslutMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
         tempVector = malloc(n*sizeof(int));
     
 
@@ -117,10 +117,16 @@ int main(){
    
     // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
      MPI_Bcast(matrix1, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
-     // MPI_Scatter(matrix2, (n*n)/2, MPI_INT, reslutMatrix, (n*n)/2, MPI_INT, 0, MPI_COMM_WORLD);
+     MPI_Scatter(matrix2, (n*n)/comm_sz, MPI_INT, reslutMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
     
       printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
-      printMatrix(n, matrix1);
+     // printMatrix(n, reslutMatrix);
+     for(int i=0; i<(n)/comm_sz; i++){
+         for(int j=0; j<n; j++){
+            printf("%d,", reslutMatrix[i*n+j]);
+         }
+         printf("\n");
+     }
     
                 
 
