@@ -61,7 +61,8 @@ int main(){
     char form[3];
     int *matrix1 = NULL;
     int *matrix2 = NULL;
-    int *resultMatrix = NULL;
+    int *splicedMatrix = NULL;
+    int *reslutMatrix = NULL;
     int *tempVector = NULL;
     int local_n, n;
     int my_rank, comm_sz;
@@ -82,7 +83,8 @@ int main(){
 
         matrix1 = malloc(n*n*sizeof(int));
         matrix2 = malloc(n*n*sizeof(int));
-        resultMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
+        matrix2 = malloc((n*n)/com*sizeof(int));
+        reslutMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
         tempVector = malloc(n*sizeof(int));
     
 
@@ -116,21 +118,36 @@ int main(){
     start = MPI_Wtime();
    
     // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
-     MPI_Bcast(matrix1, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
-     MPI_Scatter(matrix2, (n*n)/comm_sz, MPI_INT, resultMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
+     MPI_Bcast(matrix2, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
+     MPI_Scatter(matrix1, (n*n)/comm_sz, MPI_INT, splicedMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
     
-      printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
-     // printMatrix(n, resultMatrix);
-     for(int i=0; i<(n)/comm_sz; i++){
-         for(int j=0; j<n; j++){
-            printf("%d,", resultMatrix[i*n+j]);
-         }
-         printf("\n");
-     }
-    
+     //  printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
+     // // printMatrix(n, splicedMatrix);
+     // for(int i=0; i<(n)/comm_sz; i++){
+     //     for(int j=0; j<n; j++){
+     //        printf("%d,", splicedMatrix[i*n+j]);
+     //     }
+     //     printf("\n");
+     // }
+    if(strcmp("ijk",*form) == 0){
+        int i,j,k;
+        for(i=0; i<(n*n)/comm_sz; i++){
+            for(j=0; j<n; j++){
+                tempVector[i] = 0;
+                for(k=0; k<n; k++){
+
+                    reslutMatrix[i*n+j] += splicedMatrix[i*n+k] * matrix2[k*n+j];
+                }
+                // printf("%i\n", tempVector[i] );
+                // reslutMatrix[i*n+j] = tempVector[i];
+            }
+        }
+        // MPI_Gather(reslutMatrix, n, MPI_INT,
+        //     reslutMatrix, n, MPI_INT, 0, comm);
+    }
                 
 
-   // printMatrix(n, matrix2);   
+   printMatrix(n, reslutMatrix);   
     finish = MPI_Wtime();
     loc_elapsed = finish - start;
     MPI_Reduce(&loc_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
@@ -140,7 +157,7 @@ int main(){
 
     free(matrix1);
     free(matrix2);
-    free(resultMatrix);
+    free(splicedMatrix);
     free(tempVector);
     MPI_Finalize();
     return 0;

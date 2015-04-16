@@ -20,54 +20,7 @@ void reciveMatrix(int n, int matrix[] ){
 void multiMatrixIJK(int n, int matrixA[], int matrixB[], int reslutC[]){
 	
 }
-void createMatrix(int n, int matrixA[], int matrixB[]){
-	int row;
-	int colum;
-	int temp;
-	for(row=0; row<n; row++){
-		for(colum=0; colum<n; colum++){
-			temp = (rand()%10);
-			matrixB[row*n+colum] = temp;
-			printf("%i\n", matrixB[row*n+colum]);
-		}
-	}
-
-	for(row=0; row<n; row++){
-		for(colum=0; colum<n; colum++){
-			temp = (rand()%10);
-			matrixB[row*n+colum] = (int)1;
-		}
-	}
-}
-void printMatrix(int n, int matrix[]){
-	//for printing pourpses --------------
-	int i;
-	int j;
-	for (i = 0; i < n; i++) {
-     for (j = 0; j < n; j++)
-        printf("%d ", matrix[i*n+j]);
-     printf("\n");
-  	}
-	// for(i=0; i<n; i++)
-	// 	printf("%d\n",matrix[i] );
-}
-int main(){
-
-	char flag;
-	char form[3];
-	int *matrix1 = NULL;
-	int *matrix2 = NULL;
-	int *reslutMatrix = NULL;
-	int *tempVector = NULL;
-	int n;
-
-	scanf("%s %c %d",form, &flag, &n);
-
-	matrix1 = malloc(n*n*sizeof(int));
-	matrix2 = malloc(n*n*sizeof(int));
-	reslutMatrix = malloc(n*n*sizeof(int));
-	tempVector = malloc(n*sizeof(int));
-
+void createMatrix(char flag, int n, int matrix1[], int matrix2[]){
 	if(flag == 'R'){
 		// createMatrix(n, matrix1, matrix2);
 		int row;
@@ -93,8 +46,64 @@ int main(){
 		reciveMatrix(n, matrix1);
 		reciveMatrix(n, matrix2);
 	}
+}
+void printMatrix(int n, int matrix[]){
+	//for printing pourpses --------------
+	int i;
+	int j;
+	for (i = 0; i < n; i++) {
+     for (j = 0; j < n; j++)
+        printf("%d ", matrix[i*n+j]);
+     printf("\n");
+  	}
+	// for(i=0; i<n; i++)
+	// 	printf("%d\n",matrix[i] );
+}
+int main(){
 
-	if(strcmp("ijk",form) == 0){
+	char *flag;
+	char *form[3];
+	int *matrix1 = NULL;
+	int *matrix2 = NULL;
+	int *reslutMatrix = NULL;
+	int *tempVector = NULL;
+	int n;
+
+	scanf("%s %c %d",*form, flag, &n);
+
+	matrix1 = malloc(n*n*sizeof(int));
+	matrix2 = malloc(n*n*sizeof(int));
+	reslutMatrix = malloc(n*n*sizeof(int));
+	tempVector = malloc(n*sizeof(int));
+
+	createMatrix(*flag, n, matrix1, matrix2);
+	// if(flag == 'R'){
+	// 	// createMatrix(n, matrix1, matrix2);
+	// 	int row;
+	// 	int colum;
+	// 	int counter;
+	// 	int temp =0;
+	// 	srand(time(NULL));
+
+	// 	for(counter=0; counter<2; counter++){
+	// 		for(row=0; row<n; row++){
+	// 			for(colum=0; colum<n; colum++){
+					
+	// 				temp = (rand()%10);
+	// 				if(counter == 0)
+	// 					matrix1[row*n+colum] = temp;
+	// 				else
+	// 					matrix2[row*n+colum] = temp;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// else if(flag == 'I'){
+	// 	reciveMatrix(n, matrix1);
+	// 	reciveMatrix(n, matrix2);
+	// }
+
+	if(strcmp("ijk",*form) == 0){
 		int i,j,k;
 		for(i=0; i<n; i++){
 			for(j=0; j<n; j++){
@@ -108,7 +117,7 @@ int main(){
 			}
 		}
 	}
-	else if(strcmp("ikj",form) == 0){
+	else if(strcmp("ikj",*form) == 0){
 		int i,j,k;
 		for(i=0; i<n; i++){
 			for(k=0; k<n; k++){
@@ -120,7 +129,7 @@ int main(){
 			}
 		}
 	}
-	else if(strcmp("kji",form) == 0){
+	else if(strcmp("kji",*form) == 0){
 		int i,j,k;
 		for(k=0; k<n; k++){
 			for(j=0; j<n; j++){
