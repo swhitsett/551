@@ -38,6 +38,7 @@ void createMatrix(int n, int matrixA[], int matrixB[]){
         for(colum=0; colum<n; colum++){
             temp = (rand()%10);
             matrixB[row*n+colum] = (int)1;
+
         }
     }
 }
@@ -61,8 +62,9 @@ int main(){
     char form[3];
     int *matrix1 = NULL;
     int *matrix2 = NULL;
+    int *matrix3 = NULL;
     int *splicedMatrix = NULL;
-    int *reslutMatrix = NULL;
+    int *resultMatrix = NULL;
     int *tempVector = NULL;
     int local_n, n;
     int my_rank, comm_sz;
@@ -83,11 +85,12 @@ int main(){
 
         matrix1 = malloc(n*n*sizeof(int));
         matrix2 = malloc(n*n*sizeof(int));
-        matrix2 = malloc((n*n)/com*sizeof(int));
-        reslutMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
+        splicedMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
+        matrix3 = malloc(n*n*sizeof(int));
+        resultMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
         tempVector = malloc(n*sizeof(int));
     
-
+    if(my_rank == 0){
     if(flag == 'R'){
         // createMatrix(n, matrix1, matrix2);
         int row;
@@ -105,13 +108,23 @@ int main(){
                         matrix1[row*n+colum] = temp;
                     else
                         matrix2[row*n+colum] = temp;
+
+                    if(counter == 0)
+                        matrix3[row*n+colum] = 0;
                 }
             }
         }
+        printMatrix(n, matrix1);
+        printf("\n");
+        printMatrix(n, matrix2);
+        printf("\n");
+        printMatrix(n, matrix3);
+        printf("-------------------------\n");
     }
     else if(flag == 'I'){
         reciveMatrix(n, matrix1);
         reciveMatrix(n, matrix2);
+    }
     }
 
     MPI_Barrier(comm);
@@ -119,6 +132,8 @@ int main(){
    
     // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
      MPI_Bcast(matrix2, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
+  //   MPI_Bcast(resultMatrix, (n*n), MPI_INT, 0, MPI_COMM_WORLD);
+     MPI_Scatter(matrix3, (n*n)/comm_sz, MPI_INT, resultMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
      MPI_Scatter(matrix1, (n*n)/comm_sz, MPI_INT, splicedMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
     
      //  printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
@@ -129,31 +144,29 @@ int main(){
      //     }
      //     printf("\n");
      // }
-    if(strcmp("ijk",*form) == 0){
+    if(strcmp("ijk",form) == 0){
         int i,j,k;
-        for(i=0; i<(n*n)/comm_sz; i++){
+        for(i=0; i<(n)/comm_sz; i++){
             for(j=0; j<n; j++){
-                tempVector[i] = 0;
                 for(k=0; k<n; k++){
 
-                    reslutMatrix[i*n+j] += splicedMatrix[i*n+k] * matrix2[k*n+j];
+                    resultMatrix[i*n+j] += splicedMatrix[i*n+k] * matrix2[k*n+j];
                 }
-                // printf("%i\n", tempVector[i] );
-                // reslutMatrix[i*n+j] = tempVector[i];
             }
         }
-        // MPI_Gather(reslutMatrix, n, MPI_INT,
-        //     reslutMatrix, n, MPI_INT, 0, comm);
     }
                 
+    MPI_Gather(resultMatrix, (n*n)/comm_sz, MPI_INT,
+                    matrix3, (n*n)/comm_sz, MPI_INT, 0,
+                                    MPI_COMM_WORLD);
 
-   printMatrix(n, reslutMatrix);   
-    finish = MPI_Wtime();
-    loc_elapsed = finish - start;
-    MPI_Reduce(&loc_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+   finish = MPI_Wtime();
+   loc_elapsed = finish - start;
 
-    if (my_rank == 0)
-        printf("Elapsed time = %f\n", elapsed);
+   if(my_rank == 0){
+   printf("Elapsed time = %f\n", loc_elapsed);
+   printMatrix(n, matrix3);
+   }
 
     free(matrix1);
     free(matrix2);
