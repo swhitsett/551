@@ -54,6 +54,30 @@ void ijkForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
     }
 }
 /*-------------------------------------------------------------------*/
+void ikjForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
+
+    int i,j,k;
+    for(i=0; i<(n)/comm_sz; i++){
+        for(k=0; k<n; k++){
+            for(j=0; j<n; j++){
+                resultC[i*n+j] += matrixA[i*n+k] * matrixB[k*n+j];
+            }
+        }
+    }
+}
+
+/*-------------------------------------------------------------------*/
+void kijForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
+
+    int i,j,k;
+    for(k=0; k<n; k++){
+        for(i=0; i<n/comm_sz; i++){
+            for(j=0; j<n; j++){
+                resultC[i*n+j] += matrixA[i*n+k] * matrixB[k*n+j];
+            }
+        }
+    }
+}
 
 int main(){
 
@@ -103,6 +127,10 @@ int main(){
 
     if(strcmp("ijk",form) == 0)
         ijkForm(n, comm_sz, splicedMatrix, matrix2, resultMatrix);
+    else if(strcmp("ikj",form) == 0)
+        ikjForm(n, comm_sz, splicedMatrix, matrix2, resultMatrix);
+    else if(strcmp("kij",form) == 0)
+        kijForm(n, comm_sz, splicedMatrix, matrix2, resultMatrix);
 
     MPI_Gather(resultMatrix, (n*n)/comm_sz, MPI_INT,
             matrix3, (n*n)/comm_sz, MPI_INT, 0,
