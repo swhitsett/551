@@ -16,13 +16,13 @@ void reciveMatrix(int n, char flag, int matrix[] ){
     for(row=0; row<n; row++){
         for(colum=0; colum<n; colum++){
             if(flag == 'I')
-               scanf("%i", &matrix[row*n+colum]);
+                scanf("%i", &matrix[row*n+colum]);
             else if(flag == 'R')
-               matrix[row*n+colum] = (rand()%10);
+                matrix[row*n+colum] = (rand()%10);
             else if(flag == 'C')
-               matrix[row*n+colum] = 0;
+                matrix[row*n+colum] = 0;
             else
-               printf("unspecificed form");
+                printf("unspecificed form");
         }
     }
 }
@@ -31,29 +31,8 @@ void multiMatrixIJK(int n, int matrixA[], int matrixB[], int resultC[]){
 
 }
 /*-------------------------------------------------------------------*/
-void createMatrix(int n, char flag, int matrixA[], int matrixB[], int matrixC){
-    int row;
-    int colum;
-    int temp;
-    for(row=0; row<n; row++){
-        for(colum=0; colum<n; colum++){
-            temp = (rand()%10);
-            matrixB[row*n+colum] = temp;
-            printf("%i\n", matrixB[row*n+colum]);
-        }
-    }
-
-    for(row=0; row<n; row++){
-        for(colum=0; colum<n; colum++){
-            temp = (rand()%10);
-            matrixB[row*n+colum] = (int)1;
-
-        }
-    }
-}
 /*-------------------------------------------------------------------*/
 void printMatrix(int n, int matrix[]){
-    //for printing pourpses --------------
     int i;
     int j;
     for (i = 0; i < n; i++) {
@@ -61,10 +40,21 @@ void printMatrix(int n, int matrix[]){
             printf("%d ", matrix[i*n+j]);
         printf("\n");
     }
-    // for(i=0; i<n; i++)
-    // 	printf("%d\n",matrix[i] );
 }
 /*-------------------------------------------------------------------*/
+void ijkForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
+
+    int i,j,k;
+    for(i=0; i<(n)/comm_sz; i++){
+        for(j=0; j<n; j++){
+            for(k=0; k<n; k++){
+                resultC[i*n+j] += matrixA[i*n+k] * matrixB[k*n+j];
+            }
+        }
+    }
+}
+/*-------------------------------------------------------------------*/
+
 int main(){
 
     char flag;
@@ -74,10 +64,9 @@ int main(){
     int *matrix3 = NULL;
     int *splicedMatrix = NULL;
     int *resultMatrix = NULL;
-    int *tempVector = NULL;
-    int local_n, n;
+    int spliced_sz, n;
     int my_rank, comm_sz;
-    double start, finish, loc_elapsed, elapsed;
+    double start, finish, loc_elapsed;
 
     MPI_Comm comm;
 
@@ -87,18 +76,18 @@ int main(){
     MPI_Comm_rank(comm, &my_rank);
 
     // allocate arrays and populate matrix
-        scanf("%s %c %d",form, &flag, &n);
-        MPI_Bcast(&form, 3, MPI_INT, 0, comm);
-        MPI_Bcast(&flag, 1, MPI_INT, 0, comm); 
-        MPI_Bcast(&n, 1, MPI_INT, 0, comm);
+    scanf("%s %c %d",form, &flag, &n);
+    MPI_Bcast(&form, 3, MPI_INT, 0, comm);
+    MPI_Bcast(&flag, 1, MPI_INT, 0, comm); 
+    MPI_Bcast(&n, 1, MPI_INT, 0, comm);
+    spliced_sz = (n*n)/comm_sz;
 
-        matrix1 = malloc(n*n*sizeof(int));
-        matrix2 = malloc(n*n*sizeof(int));
-        splicedMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
-        matrix3 = malloc(n*n*sizeof(int));
-        resultMatrix = malloc(((n*n)/comm_sz)*sizeof(int));
-        tempVector = malloc(n*sizeof(int));
-    
+    matrix1 = malloc(n * n * sizeof(int));
+    matrix2 = malloc(n * n * sizeof(int));
+    matrix3 = malloc(n * n * sizeof(int));
+    splicedMatrix = malloc(spliced_sz * sizeof(int));
+    resultMatrix = malloc(spliced_sz * sizeof(int));
+
     if(my_rank == 0){
         reciveMatrix(n, flag, matrix1);
         reciveMatrix(n, flag, matrix2);
@@ -107,49 +96,30 @@ int main(){
 
     MPI_Barrier(comm);
     start = MPI_Wtime();
-   
-    // Code to time Goes hereeeeeeeeeeeeeee and what im dividing up !!!!!!
-     MPI_Bcast(matrix2, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
-  //   MPI_Bcast(resultMatrix, (n*n), MPI_INT, 0, MPI_COMM_WORLD);
-     MPI_Scatter(matrix3, (n*n)/comm_sz, MPI_INT, resultMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
-     MPI_Scatter(matrix1, (n*n)/comm_sz, MPI_INT, splicedMatrix, (n*n)/comm_sz, MPI_INT, 0, MPI_COMM_WORLD);
-    
-     //  printf("Greetings from process %d of %d!\n", my_rank, comm_sz);
-     // // printMatrix(n, splicedMatrix);
-     // for(int i=0; i<(n)/comm_sz; i++){
-     //     for(int j=0; j<n; j++){
-     //        printf("%d,", splicedMatrix[i*n+j]);
-     //     }
-     //     printf("\n");
-     // }
-    if(strcmp("ijk",form) == 0){
-        int i,j,k;
-        for(i=0; i<(n)/comm_sz; i++){
-            for(j=0; j<n; j++){
-                for(k=0; k<n; k++){
+    //---------------------------------------------------------------------------------------------------
+    MPI_Bcast(matrix2, (n * n), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(matrix1, spliced_sz, MPI_INT, splicedMatrix, spliced_sz, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(matrix3, spliced_sz, MPI_INT, resultMatrix, spliced_sz, MPI_INT, 0, MPI_COMM_WORLD);
 
-                    resultMatrix[i*n+j] += splicedMatrix[i*n+k] * matrix2[k*n+j];
-                }
-            }
-        }
-    }
-                
+    if(strcmp("ijk",form) == 0)
+        ijkForm(n, comm_sz, splicedMatrix, matrix2, resultMatrix);
+
     MPI_Gather(resultMatrix, (n*n)/comm_sz, MPI_INT,
-                    matrix3, (n*n)/comm_sz, MPI_INT, 0,
-                                    MPI_COMM_WORLD);
+            matrix3, (n*n)/comm_sz, MPI_INT, 0,
+            MPI_COMM_WORLD);
+    //---------------------------------------------------------------------------------------------------
+    finish = MPI_Wtime();
+    loc_elapsed = finish - start;
 
-   finish = MPI_Wtime();
-   loc_elapsed = finish - start;
-
-   if(my_rank == 0){
-   printf("Elapsed time = %f\n", loc_elapsed);
-   printMatrix(n, matrix3);
-   }
+    if(my_rank == 0){
+        printf("Elapsed time = %f\n", loc_elapsed);
+        printMatrix(n, matrix3);
+    }
 
     free(matrix1);
     free(matrix2);
+    free(matrix3);
     free(splicedMatrix);
-    free(tempVector);
     MPI_Finalize();
     return 0;
 
