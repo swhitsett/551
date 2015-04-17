@@ -121,11 +121,12 @@ void ijkForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
   -------------------------------------------------------------------*/
 void ikjForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
 
-    int i,j,k;
+    int i,j,k,temp;
     for(i=0; i<(n)/comm_sz; i++){
         for(k=0; k<n; k++){
+            temp = matrixA[i*n+k];
             for(j=0; j<n; j++){
-                resultC[i*n+j] += matrixA[i*n+k] * matrixB[k*n+j];
+                resultC[i*n+j] += temp * matrixB[k*n+j];
             }
         }
     }
@@ -146,11 +147,12 @@ void ikjForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
   -------------------------------------------------------------------*/
 void kijForm(int n, int comm_sz, int matrixA[], int matrixB[], int resultC[]){
 
-    int i,j,k;
+    int i,j,k,temp;
     for(k=0; k<n; k++){
         for(i=0; i<n/comm_sz; i++){
+            temp = matrixA[i*n+k];
             for(j=0; j<n; j++){
-                resultC[i*n+j] += matrixA[i*n+k] * matrixB[k*n+j];
+                resultC[i*n+j] += temp * matrixB[k*n+j];
             }
         }
     }
