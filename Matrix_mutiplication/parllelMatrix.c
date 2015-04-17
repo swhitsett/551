@@ -4,16 +4,25 @@
 #include <time.h>
 #include <mpi.h>
 
-void reciveMatrix(int n,int matrix[]);
+void reciveMatrix(int n, char flag, int matrix[]);
 void multiMatrixIJK(int n, int matrixA[], int matrixB[], int resultC[]);
 void printMatrix(int n, int matrix[]);
 /*-------------------------------------------------------------------*/
-void reciveMatrix(int n, int matrix[] ){
+void reciveMatrix(int n, char flag, int matrix[] ){
     int row;
     int colum;
+    srand(time(NULL));
+
     for(row=0; row<n; row++){
         for(colum=0; colum<n; colum++){
-            scanf("%i", &matrix[row*n+colum]);
+            if(flag == 'I')
+               scanf("%i", &matrix[row*n+colum]);
+            else if(flag == 'R')
+               matrix[row*n+colum] = (rand()%10);
+            else if(flag == 'C')
+               matrix[row*n+colum] = 0;
+            else
+               printf("unspecificed form");
         }
     }
 }
@@ -22,7 +31,7 @@ void multiMatrixIJK(int n, int matrixA[], int matrixB[], int resultC[]){
 
 }
 /*-------------------------------------------------------------------*/
-void createMatrix(int n, int matrixA[], int matrixB[]){
+void createMatrix(int n, char flag, int matrixA[], int matrixB[], int matrixC){
     int row;
     int colum;
     int temp;
@@ -91,40 +100,9 @@ int main(){
         tempVector = malloc(n*sizeof(int));
     
     if(my_rank == 0){
-    if(flag == 'R'){
-        // createMatrix(n, matrix1, matrix2);
-        int row;
-        int colum;
-        int counter;
-        int temp =0;
-        srand(time(NULL));
-
-        for(counter=0; counter<2; counter++){
-            for(row=0; row<n; row++){
-                for(colum=0; colum<n; colum++){
-
-                    temp = (rand()%10);
-                    if(counter == 0)
-                        matrix1[row*n+colum] = temp;
-                    else
-                        matrix2[row*n+colum] = temp;
-
-                    if(counter == 0)
-                        matrix3[row*n+colum] = 0;
-                }
-            }
-        }
-        printMatrix(n, matrix1);
-        printf("\n");
-        printMatrix(n, matrix2);
-        printf("\n");
-        printMatrix(n, matrix3);
-        printf("-------------------------\n");
-    }
-    else if(flag == 'I'){
-        reciveMatrix(n, matrix1);
-        reciveMatrix(n, matrix2);
-    }
+        reciveMatrix(n, flag, matrix1);
+        reciveMatrix(n, flag, matrix2);
+        reciveMatrix(n, 'C', matrix3);
     }
 
     MPI_Barrier(comm);
