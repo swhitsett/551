@@ -28,12 +28,6 @@ int main(){
 			scanf("%lf",&A[i][j]);
 		}
 	}
-	// printf("\n\n");
-	// for (i = 0; i < n; i++) {
- //        for (j = 0; j < n+1; j++)
- //            printf("%lf ", A[i][j]);
- //        printf("\n");
- //    }
 
 	for(j=0; j<n; j++){
 		for(i=0; i<n; i++){
@@ -49,23 +43,22 @@ int main(){
 	X[n-1]=A[n-1][n]/A[n-1][n-1];
 
 	/* this loop is for backward substitution*/
-	for(i=n-1; i>0; i--)
+	for(i=n-2; i>=0; i--)
 	{
 		sum=0.0;
-		for(j=i+1; j<=n; j++)
+		for(j=i+1; j<=n-1; j++)
 		{
-			sum=sum+A[i-1][j]*X[j];
+			// printf("%lf and %lf\n", A[i][j], X[j]);
+			sum=sum+A[i][j]*X[j];
 			// printf("A[%d][%d] * x[%d]\n",i,j,j );
 		}
-		// printf("\n%lf\n",sum);
-		X[i]=(A[i][n+1]-sum)/A[i][i];
-		// printf("x[%d]=(A[%d][%d+1]-sum)/A[%d][%d]\n",i,i,n,i,i );
+		X[i]=(A[i][n]-sum)/A[i][i];
+		// printf("x[%d]=(A[%d][%d]-%lf)/A[%d][%d]\n",i,i,n,sum,i,i );
 	}
 
-	// printf("\nThe solution is: \n");
 	for(i=0; i<n; i++)
 	{
-		// printf("\nx%d=%f\t",i,X[i]); /* x1, x2, x3 are the required solutions*/
+		printf("\nx%d=%f\t",i,X[i]); /* x1, x2, x3 are the required solutions*/
 	}
 	return 0;
 }
