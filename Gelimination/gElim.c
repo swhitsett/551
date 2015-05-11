@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-// #include <omp.h>
+#include <omp.h>
 #include <time.h>
 // #include <omp.h>
 void upperTriangular(double** A, int n, int threads){
@@ -76,8 +76,7 @@ int main(int argc, char *argv[]){
 	int k;
 	int n;
 	int threads;
-	// double sum = 0.0;
-	// double C;
+	double start, finished, elapsed;
 	double **A = NULL;
 	double *X;
 	// double C;
@@ -108,7 +107,7 @@ int main(int argc, char *argv[]){
 	// 		scanf("%lf",&A[i][j]);
 	// 	}
 	// }
-
+	start = omp_get_wtime();
 	upperTriangular(A, n, threads);
  // 	printf("\n\n");
 	// for (i = 0; i < n; i++) {
@@ -118,9 +117,14 @@ int main(int argc, char *argv[]){
  //    }
 	// X[n-1]=A[n-1][n]/A[n-1][n-1];
 	backwardSub(A, X, n, threads);
-
+	finished = omp_get_wtime();
+	elapsed = finished - start;
 	for(i=0; i<n; i++)
 		printf("\nx%d=%f\t",i,X[i]);
+
+	printf("usinig %d cores\n", omp_get_num_procs());
+	printf("usinig %d threads\n", omp_get_num_threads());
+	printf("elapsed time = %f seconds\n", elapsed_time);
 
 	free(A);
 	free(X);
