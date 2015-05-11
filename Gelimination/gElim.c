@@ -1,24 +1,35 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 #include <math.h>
+// #include <omp.h>
+#include <time.h>
 // #include <omp.h>
 void upperTriangular(double** A, int n, int threads){
 	
-	int i;
-	int j;
-	int k;
-	double C;
+	int i, j, k, curMax;
+	double pivot, multiplier;
+	double max = 0.0;
 
-	for(j=0; j<n; j++){
-		for(i=0; i<n; i++){
-			if(i>j){										//selection of pivot
-				C=A[i][j]/A[j][j];
-				for(k=0; k<n+1; k++){
-					A[i][k]=A[i][k]-C*A[j][k];
-				}
+	for(i = 0; i < n; i++){
+        // partial pivot
+		for(j = i; j < n; j++){
+			if(A[j][i] > max){
+				max = A[i][j];
+				curMax = j;
 			}
 		}
+		for(k = i; k < n + 1; k++){
+			pivot = A[curMax][k];
+			A[curMax][k] = A[i][k];
+			A[i][k] = pivot;
+		}
+		
+		for(k = i + 1; k < n; k++){
+			multiplier = -(A[k][i] / A[i][i]);
+			for(j = i; j < n + 1; j++){
+				A[k][j] = A[k][j] + multiplier * A[i][j];
+			}
+		}	
 	}
 }
 
@@ -27,11 +38,9 @@ void backwardSub(double** A, double* X, int n, int threads){
 	int j;
 	double sum;
 	/* this loop is for backward substitution*/
-	for(i=n-1; i>=0; i--)
-	{
+	for(i=n-1; i>=0; i--){
 		sum=0.0;
-		for(j=i+1; j<=n-1; j++)
-		{
+		for(j=i+1; j<=n-1; j++){
 			// printf("%lf and %lf\n", A[i][j], X[j]);
 			sum=sum+A[i][j]*X[j];
 			// printf("sum= %lf A[%d][%d]= %lf X[%d]= %lf\n", sum, i, j, A[i][j], j, X[j]);
@@ -44,17 +53,18 @@ void backwardSub(double** A, double* X, int n, int threads){
 void populateMatrix(double** A, int n){
 	int i;
 	int j;
+	srand48(time(NULL));
 
 	for(i=0; i<n; i++){
 		A[i] = malloc((n+1)* sizeof(double));
 
 		for(j=0; j<(n+1); j++){
-			// if(j = (n+1))
-			// 	C[i] = drand48();
+			// if(j == (n+1))
+				// C[i] = drand48();
 			// else
-			// 	A[i][j] = drand48();
+				A[i][j] = drand48() * 2e6 - 1e6;
 
-			scanf("%lf",&A[i][j]);
+			// scanf("%lf",&A[i][j]);
 		}
 	}
 }
@@ -77,14 +87,19 @@ int main(int argc, char *argv[]){
 		threads = atoi(argv[2]);
 	}
 
-	scanf("%d\n", &n);
+	// scanf("%d\n", &n);
 
 	A = malloc(n * sizeof(double));
 	X = malloc(n * sizeof(double));
 	// C = malloc(n * n * sizeof(double));
 
 	populateMatrix(A, n);
-
+	// printf("\n\n");
+	// for (i = 0; i < n; i++) {
+ //        for (j = 0; j < n+1; j++)
+ //            printf("%lf ", A[i][j]);
+ //        printf("\n");
+ //    }
 	// for(i=0; i<n; i++){
 	// 	A[i] = malloc((n+1)* sizeof(double));
 
@@ -95,7 +110,12 @@ int main(int argc, char *argv[]){
 	// }
 
 	upperTriangular(A, n, threads);
-
+ // 	printf("\n\n");
+	// for (i = 0; i < n; i++) {
+ //        for (j = 0; j < n+1; j++)
+ //            printf("%lf ", A[i][j]);
+ //        printf("\n");
+ //    }
 	// X[n-1]=A[n-1][n]/A[n-1][n-1];
 	backwardSub(A, X, n, threads);
 
