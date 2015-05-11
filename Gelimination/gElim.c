@@ -10,6 +10,9 @@ void upperTriangular(double** A, int n, int threads){
 	double pivot, multiplier;
 	double max = 0.0;
 
+	#pragma omp parallel num_threads(threads) \
+        	  default(none) shared(A, n, pivot, max_iter, max) 
+        	  private(i, j, k, multiplier)
 	for(i = 0; i < n; i++){
         // partial pivot
 		for(j = i; j < n; j++){
@@ -18,12 +21,13 @@ void upperTriangular(double** A, int n, int threads){
 				curMax = j;
 			}
 		}
+		#pragma omp for
 		for(k = i; k < n + 1; k++){
 			pivot = A[curMax][k];
 			A[curMax][k] = A[i][k];
 			A[i][k] = pivot;
 		}
-		
+		#pragma omp for
 		for(k = i + 1; k < n; k++){
 			multiplier = -(A[k][i] / A[i][i]);
 			for(j = i; j < n + 1; j++){
@@ -37,9 +41,11 @@ void backwardSub(double** A, double* X, int n, int threads){
 	int i;
 	int j;
 	double sum;
-	/* this loop is for backward substitution*/
+	# pragma omp parallel num_threads(threads) \
+        default(none) shared(A, X, n) private(i, k)
 	for(i=n-1; i>=0; i--){
 		sum=0.0;
+		#pragma omp for
 		for(j=i+1; j<=n-1; j++){
 			// printf("%lf and %lf\n", A[i][j], X[j]);
 			sum=sum+A[i][j]*X[j];
@@ -122,9 +128,9 @@ int main(int argc, char *argv[]){
 	for(i=0; i<n; i++)
 		printf("\nx%d=%f\t",i,X[i]);
 
-	printf("usinig %d cores\n", omp_get_num_procs());
+	printf("\nusinig %d cores\n", omp_get_num_procs());
 	printf("usinig %d threads\n", omp_get_num_threads());
-	printf("elapsed time = %f seconds\n", elapsed_time);
+	printf("elapsed time = %f seconds\n", elapsed);
 
 	free(A);
 	free(X);
