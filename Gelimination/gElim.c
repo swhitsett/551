@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <time.h>
 // #include <omp.h>
-void upperTriangular(double** A, int n, int threads){
+void upperTriangular(double** A, int n, int threads, int threads_used){
 	
 	int i;
    int j;
@@ -14,7 +14,8 @@ void upperTriangular(double** A, int n, int threads){
 	double curMax = 0.0;
    
    #pragma omp parallel num_threads(threads) \
-           default(none) shared(A, n, pivot, maxIndex, curMax) private(i, j, k, multiplier)
+           default(none) shared(A, n, pivot, maxIndex, curMax) private(i, j, k, multiplier, threads_used)
+   threads_used = omp_get_num_threads();
 	for(i = 0; i < n; i++){
         // partial pivot
 		for(j = i; j < n; j++){
@@ -82,6 +83,7 @@ int main(int argc, char *argv[]){
 	int i;
 	int n;
 	int threads;
+   int threads_used;
 	double start, finished, elapsed;
 	double **A = NULL;
 	double *X;
@@ -94,8 +96,8 @@ int main(int argc, char *argv[]){
 
 	// scanf("%d\n", &n);
 
-	A = malloc(n * sizeof(double));
-	X = malloc(n * sizeof(double));
+	A = malloc(n * sizeof(double*));
+	X = malloc(n * sizeof(double*));
 	// C = malloc(n * n * sizeof(double));
 
 	populateMatrix(A, n);
@@ -114,7 +116,7 @@ int main(int argc, char *argv[]){
 	// 	}
 	// }
 	start = omp_get_wtime();
-	upperTriangular(A, n, threads);
+	upperTriangular(A, n, threads, threads_used);
  // 	printf("\n\n");
 	// for (i = 0; i < n; i++) {
  //        for (j = 0; j < n+1; j++)
