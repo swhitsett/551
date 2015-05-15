@@ -4,144 +4,161 @@
 #include <omp.h>
 #include <time.h>
 
-int threads_used;
 int threads;
+int thread_count;
 
-void upperTriangular(double** A, int n)
-{
+void createMatrix(double** A, double* B, 
+                  double** originalMatrix,
+                  double* originalVector, int n){
     int i;
     int j;
-    int k;
-    int max_iter;
-    double pivot;
-    double multiplier;
-
-    for(i = 0; i < n; i++) 
-    {
-        // partial pivot
-        for(j = i; j < n; j++)
-        {
-            double max = 0.0;
-            if(fabs(A[j][i]) > fabs(max))
-            {
-                max = A[j][i];
-                max_iter = j;
-            }
-        }
-
-        for(k = i; k < n + 1; k++)
-        {
-            pivot = A[max_iter][k];
-            A[max_iter][k] = A[i][k];
-            A[i][k] = pivot;
-        }
-
-#pragma omp parallel for num_threads(threads) \
-        default(none) shared(A, n, i, threads) private(j, k, multiplier)
-
-        for(k = i + 1; k < n; k++)
-        {
-            multiplier = A[k][i] / A[i][i];
-            for(j = i; j < n + 1; j++)
-            {
-                A[k][j] = multiplier * A[i][j];
-
-            }
-        }
-    }
-}
-void backwardSub(double** A, double* X, int n){
-    int i;
-    int j;
-    for(i=n-1; i>=0; i--){
-        X[i] = A[i][n] / A[i][i];
-        #pragma omp parallel for num_threads(threads) \
-                default(none) shared(A, n, i, X, threads_used) private(j)
-        for(j=i-1; j>=0; j--){
-            A[j][n] -= A[j][i] * X[i];
-            if(i == 2)
-               threads_used = omp_get_num_threads();
-        }
-    }
-}
-
-void l2_norm(double** Original, double* b, double* c, int n)
-{
-    int i, j;
-    double x = 0.0;
-    double* residual;
-
-    residual = (double*)malloc(sizeof(double) * n);
-    for(i = 0; i < n; i++)
-    {
-        residual[i] = 0.0;
-        for(j = 0; j < n; j++)
-        {
-            residual[i] += Original[i][j] * c[j];
-        }
-        residual[i] = b[i] - residual[i];
-        printf("residuals = %lf\n", residual[i]);
-    }
-
-
-    for(i = 0; i < n; i++)
-    {
-        x += (residual[i] * residual[i]);
-    }
-    double result = sqrt(x);
-    printf("The result in l2-norm is %f\n", result);
-}
-
-void populateMatrix(double** A, int n){
-    int i;
-    int j;
+    double tmp;
     srand48(time(NULL));
 
     for(i=0; i<n; i++){
-        A[i] = malloc((n+1)* sizeof(double));
+        A[i] = malloc(n * sizeof(double));
+        originalMatrix[i] = malloc(n * sizeof(double));
 
         for(j=0; j<(n+1); j++){
-            A[i][j] = drand48() * 2e6 - 1e6;
+            tmp = drand48() * 2e6 - 1e6;
+            A[i][j] = tmp;
+            originalMatrix[i][j] = tmp;
+        }
+        tmp = drand48() * 2e6 - 1e6;
+        B[i] = tmp;
+        originalVector[i] = tmp;
+    }
+}
+
+void upperTriangular(double **A, double * B, int n){
+    int i;
+    int j;
+    int k;
+    double tmp;
+    double tmp2;
+    double maxVal;
+    
+    for(i = 0; i < n-1;i++) {
+        int greatest = i;
+
+        // #pragma omp parallel for num_threads(threads) default(none) \
+         43                 shared(n, A, B, i, greatest) private(j)
+        for(j = i; j < n; j++) {
+            if(fabs(A[j][i]) > fabs(maxVal)){
+                maxVal = A[j][i];
+                greatest = j;
+            }
+        }
+
+        for(k = i; k < n; k++)
+        {
+            tmp = A[greatest][k];
+            A[greatest][k] = A[i][k];
+            A[i][k] = tmp;
+        }
+        tmp2 = B[i];
+        B[i] = B[greatest];
+        B[greatest] = tmp2;
+
+        #pragma omp parallel for num_threads(threads) default(none) \
+                shared(A, B, i, n) private(j, k)
+        for(j = i+1; j < n; j++) {
+            double multiplier = A[j][i] / A[i][i];
+            for(k = i; k < n; k++) {
+                A[j][k] -= multiplier * A[i][k];
+            }
+            B[j] -= multiplier * B[i];
         }
     }
 }
 
+void backSubstitute(double** A, double* B, double* C, int n){
 
-int main(int argc, char *argv[]){
+    int i;
+    int j;
+    for(i = n-1; i >= 0; i--) {
+        C[i] = B[i] / A[i][i];
+        #pragma omp parallel for num_threads(threads) default(none) \
+                shared(A, B, n, i, C, thread_count) private(j)
+        for(j = n-1; j >= 0; j--) {
+            B[j] -= A[j][i] * C[i];
+            if(i == 0 && j == 0) 
+                thread_count = omp_get_num_threads();
+        }
+    }
+}
 
+void computeResidual(double** originalMatrix, double* originalVector,
+                     double* C, double* X, int n){
+
+    int i;
+    int j;
+    // double* result = malloc(sizeof(double) * n);
+    #pragma omp parallel for num_threads(threads) default(none) \
+        shared(originalMatrix, originalVector, C, n, X) private(i, j)
+    for(i = 0; i < n; i++) {
+        X[i] = 0.0;
+        for(j = 0; j < n; j++) {
+            X[i] += originalMatrix[i][j] * C[j];
+        }
+        X[i] = originalVector[i] - X[i];
+    }
+    // return result;
+}
+
+double l2norm(double* X, int n){
+
+    double result = 0;
+    int i;
+    #pragma omp parallel for num_threads(threads) default(none) \
+        shared(result, X, n) private(i)
+    for(i = 0; i < n; i++) {
+        result += pow(X[i], 2);
+    }
+    return sqrt(result);
+}
+
+int main(int argc, char* argv[]){
     int n;
+    // int i;
+    // int j;
     double start, finished, elapsed;
-    double **A = NULL;
-    double *X;
-    double *C;
-
-    if(argc == 3){
-        n = atoi(argv[1]);
+    double** A;
+    double* B;
+    double* C;
+    double* X;
+    
+    if(argc == 3) {
+        n       = atoi(argv[1]);
         threads = atoi(argv[2]);
     }
+    else{
+        printf("invalid input");
+        return 0;
+    }
+    
+    double** originalMatrix = malloc(n * sizeof(double*));
+    A              = malloc(n * sizeof(double*));
+    double* originalVector  = malloc(n * sizeof(double));
+    B               = malloc(n * sizeof(double));
+    C               = malloc(n * sizeof(double));
+    X               = malloc(n * sizeof(double));
 
-    // scanf("%d\n", &n);
 
-    A = malloc(n * sizeof(double*));
-    X = malloc(n * sizeof(double));
-    C = malloc(n * sizeof(double));
-
-    populateMatrix(A, n);
+    createMatrix(A, B, originalMatrix, originalVector, n);
+    
     start = omp_get_wtime();
-    upperTriangular(A, n);
-    backwardSub(A, X, n);
+
+    upperTriangular(A, B, n);
+    backSubstitute(A,B,C,n);
+    computeResidual(originalMatrix, originalVector, C, X, n);
+
     finished = omp_get_wtime();
     elapsed = finished - start;
-      
-    l2_norm(A, X, C, n);
-//    for(i=0; i<n; i++)
-//        printf("\nx%d=%f\t",i,X[i]);
 
-    printf("\ncores: %d\n", omp_get_num_procs());
-    printf("threads: %d\n", threads_used);
-    printf("elapsed time = %f seconds\n", elapsed);
-
-    free(A);
-    free(X);
+    printf("Procs used:        %d\n", omp_get_num_procs());
+    printf("Threads used:      %d\n", thread_count);
+    printf("Elapsed time:      %f\n", elapsed);
+    printf("Residual l^2 norm: %f\n", l2norm(X, n));
     return 0;
 }
