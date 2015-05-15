@@ -6,51 +6,59 @@
 
 int threads_used;
 int threads;
-void upperTriangular(double** A, int n){
 
+void upperTriangular(double** A, int n)
+{
     int i;
     int j;
     int k;
-    int maxIndex;
-    double pivot, multiplier;
-    double curMax = 0.0;
+    int max_iter;
+    double pivot;
+    double multiplier;
 
-#pragma omp parallel num_threads(threads) \
-    default(none) shared(A, n, pivot, maxIndex, curMax) private(i, j, k, multiplier)
-    for(i = 0; i < n; i++){
-
-        for(j = i; j < n; j++){
-            if(A[j][i] > curMax){
-                curMax = A[i][j];
-                maxIndex = j;
+    for(i = 0; i < n; i++) 
+    {
+        // partial pivot
+        for(j = i; j < n; j++)
+        {
+            double max = 0.0;
+            if(fabs(A[j][i]) > fabs(max))
+            {
+                max = A[j][i];
+                max_iter = j;
             }
         }
-#pragma omp for
-        for(k = i; k < n + 1; k++){
-            pivot = A[maxIndex][k];
-            A[maxIndex][k] = A[i][k];
+
+        for(k = i; k < n + 1; k++)
+        {
+            pivot = A[max_iter][k];
+            A[max_iter][k] = A[i][k];
             A[i][k] = pivot;
         }
-#pragma omp for
-        for(k = i + 1; k < n; k++){
-            multiplier = -(A[k][i] / A[i][i]);
-            for(j = i; j < n + 1; j++){
-                A[k][j] = A[k][j] + multiplier * A[i][j];
+
+#pragma omp parallel for num_threads(threads) \
+        default(none) shared(A, n, i, threads) private(j, k, multiplier)
+
+        for(k = i + 1; k < n; k++)
+        {
+            multiplier = A[k][i] / A[i][i];
+            for(j = i; j < n + 1; j++)
+            {
+                A[k][j] = multiplier * A[i][j];
+
             }
-        }	
+        }
     }
 }
-
 void backwardSub(double** A, double* X, int n){
     int i;
     int j;
-# pragma omp parallel num_threads(threads) \
-    default(none) shared(A, X, n, threads_used) private(i, j)
     for(i=n-1; i>=0; i--){
         X[i] = A[i][n] / A[i][i];
-#pragma omp for
+        #pragma omp parallel for num_threads(threads) \
+                default(none) shared(A, n, i, X, threads_used) private(j)
         for(j=i-1; j>=0; j--){
-            A[j][n] = A[j][i] * X[i];
+            A[j][n] -= A[j][i] * X[i];
             if(i == 2)
                threads_used = omp_get_num_threads();
         }
@@ -98,6 +106,7 @@ void populateMatrix(double** A, int n){
     }
 }
 
+
 int main(int argc, char *argv[]){
 
     int n;
@@ -114,16 +123,10 @@ int main(int argc, char *argv[]){
     // scanf("%d\n", &n);
 
     A = malloc(n * sizeof(double*));
-    X = malloc(n * sizeof(double*));
+    X = malloc(n * sizeof(double));
     C = malloc(n * sizeof(double));
 
     populateMatrix(A, n);
-    // printf("\n\n");
-    // for (i = 0; i < n; i++) {
-    //        for (j = 0; j < n+1; j++)
-    //            printf("%lf ", A[i][j]);
-    //        printf("\n");
-    //    }
     start = omp_get_wtime();
     upperTriangular(A, n);
     backwardSub(A, X, n);
