@@ -44,7 +44,7 @@ void upperTriangular(double **A, double * B, int n){
         greatest = i;
 
         #pragma omp parallel for num_threads(threads) default(none) \
-                       shared(n, A, B, i, greatest) private(j)
+                       shared(n, A, B, i, greatest) private(maxVal, j)
         for(j = i; j < n; j++) {
             if(fabs(A[j][i]) > fabs(maxVal)){
                 maxVal = A[j][i];
@@ -105,16 +105,16 @@ void computeResidual(double** initMatrix, double* initVec,
     }
 }
 
-double l2norm(double* X, int n){
-
-    double result = 0;
+void l2norm(double* X, double* L2, int n){
+    
+    double result = 0.0;
     int i;
     #pragma omp parallel for num_threads(threads) default(none) \
         shared(result, X, n) private(i)
     for(i = 0; i < n; i++) {
         result += pow(X[i], 2);
     }
-    return sqrt(result);
+    *L2 = sqrt(result);
 }
 
 int main(int argc, char* argv[]){
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]){
     double* B;
     double* C;
     double* X;
-    double L2;
+    double* L2;
     
     if(argc == 3) {
         n = atoi(argv[1]);
@@ -145,6 +145,7 @@ int main(int argc, char* argv[]){
     B = malloc(n * sizeof(double));
     C = malloc(n * sizeof(double));
     X = malloc(n * sizeof(double));
+    L2 = malloc(sizeof(double));
 
 
     createMatrix(A, B, initMatrix, initVec, n);
@@ -158,11 +159,11 @@ int main(int argc, char* argv[]){
     finished = omp_get_wtime();
     elapsed = finished - start;
 
-    // l2norm(X, L2, n);
+    l2norm(X, L2, n);
 
     printf("Processors used: %d\n", omp_get_num_procs());
     printf("Threads used: %d\n", threads_used);
     printf("Elapsed time: %f\n", elapsed);
-    printf("L2 norm: %f\n", l2norm(X, n));
+    printf("L2 norm: %f\n", *L2);
     return 0;
 }
