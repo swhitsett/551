@@ -130,14 +130,17 @@ int main(int argc, char* argv[]){
     double* X;
     double* L2;
     
-    if(argc == 3) {
-        n = atoi(argv[1]);
-        threads = atoi(argv[2]);
-    }
-    else{
-        printf("invalid input");
-        return 0;
-    }
+    n = 8000;
+    #pragma omp parallel	
+    threads = omp_get_num_threads(); 
+  //  if(argc == 3) {
+  //      n = atoi(argv[1]);
+  //      threads = atoi(argv[2]);
+  //  }
+  //  else{
+  //      printf("invalid input");
+  //      return 0;
+  //  }
     
     initMatrix = malloc(n * sizeof(double*));
     initVec = malloc(n * sizeof(double));
@@ -154,16 +157,16 @@ int main(int argc, char* argv[]){
 
     upperTriangular(A, B, n);
     backSub(A, B, C, n);
-    computeResidual(initMatrix, initVec, C, X, n);
 
     finished = omp_get_wtime();
     elapsed = finished - start;
 
+    computeResidual(initMatrix, initVec, C, X, n);
     l2norm(X, L2, n);
 
     printf("Processors used: %d\n", omp_get_num_procs());
     printf("Threads used: %d\n", threads_used);
     printf("Elapsed time: %f\n", elapsed);
-    printf("L2 norm: %f\n", *L2);
+    printf("L2 norm using residuals: %f\n", *L2);
     return 0;
 }
