@@ -1,0 +1,210 @@
+Fri May 15 13:58:12 PDT 2015
+Processors used: 40
+Threads used: 1
+Elapsed time: 1907.714174
+L2 norm using residuals: 0.002226
+1909.53user 0.51system 31:50.25elapsed 99%CPU (0avgtext+0avgdata 4005280maxresident)k
+0inputs+0outputs (0major+250366minor)pagefaults 0swaps
+Fri May 15 15:32:38 PDT 2015
+Processors used: 40
+Threads used: 1
+Elapsed time: 1907.060232
+L2 norm using residuals: 0.001252
+1908.87user 0.48system 31:49.56elapsed 99%CPU (0avgtext+0avgdata 4005264maxresident)k
+0inputs+0outputs (0major+250365minor)pagefaults 0swaps
+Fri May 15 15:18:06 PDT 2015
+Processors used: 40
+Threads used: 1
+Elapsed time: 1916.189669
+L2 norm using residuals: 0.016150
+1918.00user 0.66system 31:58.86elapsed 99%CPU (0avgtext+0avgdata 4005264maxresident)k
+0inputs+0outputs (0major+250365minor)pagefaults 0swaps
+Fri May 15 13:57:03 PDT 2015
+Processors used: 40
+Threads used: 1
+Elapsed time: 1906.525752
+L2 norm using residuals: 0.007168
+1908.33user 0.50system 31:49.04elapsed 99%CPU (0avgtext+0avgdata 4005296maxresident)k
+0inputs+0outputs (0major+250367minor)pagefaults 0swaps
+Fri May 15 13:52:45 PDT 2015
+Processors used: 40
+Threads used: 1
+Elapsed time: 1916.303184
+L2 norm using residuals: 0.002738
+1918.22user 0.66system 31:59.08elapsed 99%CPU (0avgtext+0avgdata 4005280maxresident)k
+0inputs+0outputs (0major+250366minor)pagefaults 0swaps
+Fri May 15 15:22:34 PDT 2015
+Processors used: 40
+Threads used: 2
+Elapsed time: 983.983785
+L2 norm using residuals: 0.001039
+1969.88user 0.58system 16:26.23elapsed 199%CPU (0avgtext+0avgdata 4005344maxresident)k
+0inputs+0outputs (0major+250370minor)pagefaults 0swaps
+Fri May 15 15:16:15 PDT 2015
+Processors used: 40
+Threads used: 2
+Elapsed time: 979.713040
+L2 norm using residuals: 0.002089
+1961.32user 0.54system 16:21.88elapsed 199%CPU (0avgtext+0avgdata 4005360maxresident)k
+0inputs+0outputs (0major+250371minor)pagefaults 0swaps
+Fri May 15 15:01:43 PDT 2015
+Processors used: 40
+Threads used: 2
+Elapsed time: 979.568271
+L2 norm using residuals: 0.001747
+1960.80user 0.81system 16:21.91elapsed 199%CPU (0avgtext+0avgdata 4005344maxresident)k
+0inputs+0outputs (0major+250370minor)pagefaults 0swaps
+Fri May 15 15:06:08 PDT 2015
+Processors used: 40
+Threads used: 2
+Elapsed time: 982.949487
+L2 norm using residuals: 0.000964
+1967.81user 0.58system 16:25.17elapsed 199%CPU (0avgtext+0avgdata 4005344maxresident)k
+0inputs+0outputs (0major+250370minor)pagefaults 0swaps
+Fri May 15 14:59:51 PDT 2015
+Processors used: 40
+Threads used: 2
+Elapsed time: 982.042649
+L2 norm using residuals: 0.001331
+1966.01user 0.51system 16:24.22elapsed 199%CPU (0avgtext+0avgdata 4005328maxresident)k
+0inputs+0outputs (0major+250369minor)pagefaults 0swaps
+Fri May 15 14:59:27 PDT 2015
+Processors used: 40
+Threads used: 5
+Elapsed time: 398.120705
+L2 norm using residuals: 0.000527
+1992.81user 0.59system 6:40.17elapsed 498%CPU (0avgtext+0avgdata 4005424maxresident)k
+0inputs+0outputs (0major+250375minor)pagefaults 0swaps
+Fri May 15 14:53:51 PDT 2015
+Processors used: 40
+Threads used: 5
+Elapsed time: 469.765230
+L2 norm using residuals: 0.001963
+2351.09user 0.67system 7:51.89elapsed 498%CPU (0avgtext+0avgdata 4005440maxresident)k
+0inputs+0outputs (0major+250376minor)pagefaults 0swaps
+Fri May 15 14:53:09 PDT 2015
+Processors used: 40
+Threads used: 5
+Elapsed time: 398.173803
+L2 norm using residuals: 0.002874
+1993.13user 0.52system 6:40.14elapsed 498%CPU (0avgtext+0avgdata 4005424maxresident)k
+0inputs+0outputs (0major+250375minor)pagefaults 0swaps
+Fri May 15 14:52:47 PDT 2015
+Processors used: 40
+Threads used: 5
+Elapsed time: 397.838730
+L2 norm using residuals: 0.002954
+1991.37user 0.57system 6:39.84elapsed 498%CPU (0avgtext+0avgdata 4005424maxresident)k
+0inputs+0outputs (0major+250375minor)pagefaults 0swaps
+Fri May 15 14:45:57 PDT 2015
+Processors used: 40
+Threads used: 5
+Elapsed time: 469.645198
+L2 norm using residuals: 0.000895
+2350.15user 0.73system 7:51.78elapsed 498%CPU (0avgtext+0avgdata 4005456maxresident)k
+0inputs+0outputs (0major+250377minor)pagefaults 0swaps
+Fri May 15 14:49:10 PDT 2015
+Processors used: 40
+Threads used: 10
+Elapsed time: 236.339746
+L2 norm using residuals: 0.001713
+2366.20user 0.52system 3:58.22elapsed 993%CPU (0avgtext+0avgdata 4005616maxresident)k
+0inputs+0outputs (0major+250387minor)pagefaults 0swaps
+Fri May 15 14:48:48 PDT 2015
+Processors used: 40
+Threads used: 10
+Elapsed time: 236.666372
+L2 norm using residuals: 0.103468
+2369.55user 0.54system 3:58.60elapsed 993%CPU (0avgtext+0avgdata 4005584maxresident)k
+0inputs+0outputs (0major+250385minor)pagefaults 0swaps
+Fri May 15 14:43:38 PDT 2015
+Processors used: 40
+Threads used: 10
+Elapsed time: 330.028396
+L2 norm using residuals: 0.000694
+3302.98user 0.54system 5:31.92elapsed 995%CPU (0avgtext+0avgdata 4005616maxresident)k
+0inputs+0outputs (0major+250387minor)pagefaults 0swaps
+Fri May 15 14:44:47 PDT 2015
+Processors used: 40
+Threads used: 10
+Elapsed time: 236.847554
+L2 norm using residuals: 0.001928
+2371.34user 0.56system 3:58.78elapsed 993%CPU (0avgtext+0avgdata 4005616maxresident)k
+0inputs+0outputs (0major+250387minor)pagefaults 0swaps
+Fri May 15 14:38:46 PDT 2015
+Processors used: 40
+Threads used: 10
+Elapsed time: 428.026939
+L2 norm using residuals: 0.001078
+4283.04user 0.77system 7:10.11elapsed 995%CPU (0avgtext+0avgdata 4005600maxresident)k
+0inputs+0outputs (0major+250386minor)pagefaults 0swaps
+Fri May 15 14:41:04 PDT 2015
+Processors used: 40
+Threads used: 20
+Elapsed time: 219.662844
+L2 norm using residuals: 0.000808
+4397.10user 0.63system 3:41.60elapsed 1984%CPU (0avgtext+0avgdata 4005952maxresident)k
+0inputs+0outputs (0major+250412minor)pagefaults 0swaps
+Fri May 15 14:39:53 PDT 2015
+Processors used: 40
+Threads used: 20
+Elapsed time: 219.911177
+L2 norm using residuals: 0.001341
+4402.28user 0.52system 3:41.78elapsed 1985%CPU (0avgtext+0avgdata 4005936maxresident)k
+0inputs+0outputs (0major+250411minor)pagefaults 0swaps
+Fri May 15 14:37:22 PDT 2015
+Processors used: 40
+Threads used: 20
+Elapsed time: 220.294774
+L2 norm using residuals: 0.002710
+4409.86user 0.54system 3:42.19elapsed 1984%CPU (0avgtext+0avgdata 4005952maxresident)k
+0inputs+0outputs (0major+250412minor)pagefaults 0swaps
+Fri May 15 14:36:11 PDT 2015
+Processors used: 40
+Threads used: 20
+Elapsed time: 219.839976
+L2 norm using residuals: 0.000791
+4401.89user 0.54system 3:41.76elapsed 1985%CPU (0avgtext+0avgdata 4005952maxresident)k
+0inputs+0outputs (0major+250412minor)pagefaults 0swaps
+Fri May 15 14:31:43 PDT 2015
+Processors used: 40
+Threads used: 20
+Elapsed time: 420.432776
+L2 norm using residuals: 0.003910
+8412.45user 0.92system 7:02.48elapsed 1991%CPU (0avgtext+0avgdata 4005968maxresident)k
+0inputs+0outputs (0major+250413minor)pagefaults 0swaps
+Fri May 15 14:33:43 PDT 2015
+Processors used: 40
+Threads used: 30
+Elapsed time: 216.368523
+L2 norm using residuals: 0.003663
+6496.39user 0.61system 3:38.31elapsed 2975%CPU (0avgtext+0avgdata 4006288maxresident)k
+0inputs+0outputs (0major+250443minor)pagefaults 0swaps
+Fri May 15 14:32:32 PDT 2015
+Processors used: 40
+Threads used: 30
+Elapsed time: 216.283458
+L2 norm using residuals: 0.000748
+6495.02user 0.53system 3:38.18elapsed 2977%CPU (0avgtext+0avgdata 4006288maxresident)k
+0inputs+0outputs (0major+250443minor)pagefaults 0swaps
+Fri May 15 14:24:44 PDT 2015
+Processors used: 40
+Threads used: 30
+Elapsed time: 415.989473
+L2 norm using residuals: 0.001983
+12485.17user 0.82system 6:58.10elapsed 2986%CPU (0avgtext+0avgdata 4006272maxresident)k
+0inputs+0outputs (0major+250442minor)pagefaults 0swaps
+Fri May 15 14:30:03 PDT 2015
+Processors used: 40
+Threads used: 30
+Elapsed time: 216.585628
+L2 norm using residuals: 0.008222
+6503.01user 0.58system 3:38.55elapsed 2975%CPU (0avgtext+0avgdata 4006272maxresident)k
+0inputs+0outputs (0major+250442minor)pagefaults 0swaps
+Fri May 15 14:28:52 PDT 2015
+Processors used: 40
+Threads used: 30
+Elapsed time: 216.478601
+L2 norm using residuals: 0.001570
+6499.58user 0.53system 3:38.39elapsed 2976%CPU (0avgtext+0avgdata 4006288maxresident)k
+0inputs+0outputs (0major+250443minor)pagefaults 0swaps
