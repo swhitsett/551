@@ -88,8 +88,11 @@ void upperTriangular(double **A, double* B, int n){
         greatest = i;
 
         #pragma omp parallel for num_threads(threads) default(none) \
-                       shared(n, A, B, i, greatest) private(maxVal, j)
+                       shared(n, A, B, i, greatest, threads_used) private(maxVal, j)
         for(j=i; j<n; j++){
+            if(i == 0)
+               threads_used = omp_get_num_threads();
+
             if(fabs(A[j][i]) > fabs(maxVal)){
                 maxVal = A[j][i];
                 greatest = j;
@@ -106,8 +109,8 @@ void upperTriangular(double **A, double* B, int n){
         B[greatest] = tmp2;
 
         #pragma omp parallel for num_threads(threads) default(none) \
-                shared(A, B, i, n) private(j, k)
-        for(j=(i+1); j<n; j++) 
+                shared(A, B, i, n) private(tmp, j, k)
+        for(j=(i+1); j<n; j++){ 
             tmp = A[j][i] / A[i][i];
             for(k=i; k<n; k++){
                 A[j][k] -= tmp * A[i][k];
@@ -135,11 +138,9 @@ void backSub(double** A, double* B, double* C, int n){
     for(i=(n-1); i>=0; i--){
         C[i] = B[i] / A[i][i];
         #pragma omp parallel for num_threads(threads) default(none) \
-                shared(A, B, n, i, C, threads_used) private(j)
+                shared(A, B, n, i, C) private(j)
         for(j=(n-1); j>=0; j--){
             B[j] -= A[j][i] * C[i];
-            if(j == 0)             
-                threads_used = omp_get_num_threads();
         }
     }
 }
